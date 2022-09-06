@@ -1,0 +1,54 @@
+{%extends 'base.html'%} 
+
+{% block title %} Your Year{% endblock %}
+
+{% block content%}
+<div class="container" style="width: 700px; margin-top: 50px;">
+    <div class="row">
+        {% autoescape off %}
+        {%for mes in months%}
+        <div class="col-4 border" id="{{mes.monthName}}">{{ mes.mc }}</div>
+        {%endfor%}
+        {% endautoescape %}
+    </div>
+    <ul>
+        {% for goal in goals%}
+        <li>{{goal.goal}}</li>
+        {%endfor%}
+    </ul>
+</div>
+<script>
+
+    //adding id to months
+    let theMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 
+    'September', 'October', 'November', 'December']
+    
+    
+    for(let j = 0; j < theMonths.length; j++){
+        if(document.getElementById(theMonths[j])){
+            let monthElement = document.getElementById(theMonths[j]);
+            let tdElements = monthElement.getElementsByTagName("td");
+            for (let i = 0; i < tdElements.length; i++){
+            tdElements[i].id = tdElements[i].innerHTML;
+            tdElements[i].innerHTML = '';
+            let ancor = document.createElement('a');
+            ancor.innerHTML = tdElements[i].id
+            ancor.href = theMonths[j] + '/' + tdElements[i].id + '/';
+            tdElements[i].appendChild(ancor);
+    }
+        }else{
+            console.log('no hay mes');
+        }
+        
+    }
+
+    let anclas = document.getElementsByTagName('a');
+    for(let i=0; i<anclas.length; i++){
+        if(anclas[i].innerHTML === "&nbsp;"){
+            anclas[i].innerHTML = '';
+        }
+    }
+</script>
+{% endblock %}
+
+

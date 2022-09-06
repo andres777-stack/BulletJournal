@@ -1,0 +1,21 @@
+{% extends 'base.html'%} 
+
+{% block title %}Starting Your BulletJournal{%endblock%}
+
+{%block content%} 
+
+<h1>Wellcome to BulletJournal</h1>
+
+<p>Write your goals for this year!</p>
+<form action="" method="post" id="fo_rm">
+    {% csrf_token %}
+    <table>
+        {{form.as_table}}
+    </table>
+    <button type="submit">Listo!</button>
+</form>
+<div id="goals-container">
+</div>
+
+
+{%endblock%} 

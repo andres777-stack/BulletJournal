@@ -1,0 +1,82 @@
+{% extends 'base.html'%} 
+
+{% block title %} {{Day}} {{month}} {%endblock%}
+
+{% block content%} 
+<div class="container">
+
+    <h3 id="month">{{dia.mes}}</h3><h3 id="day">{{dia.number}}</h3>
+    <a href="{% url 'YearMonthDay:yourYear' %}">Get Back!</a>
+
+    <form action="" method="post" id="form">
+        {% csrf_token %}
+        <table>
+            {{form.as_table}}
+        </table>
+    </form>
+    <button onclick="saveData()">Add task</button>
+    <br>
+    <ul id="lista-task">
+        {% for task in dia.tasks.all %}
+        <li>
+            {{task.to_do}}
+            <button class="btn btn-primary"><i class="fa fa-share" aria-hidden="true"></i></button>
+            <i class="fa fa-check" aria-hidden="true"></i>
+        </li>
+        {% empty %}
+        <p>There is no task</p>
+        {% endfor %}
+    </ul>
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+            }
+            return cookieValue;
+        }
+
+        function saveData() {
+            let form = new FormData(document.getElementById('form'));
+            let lista = document.getElementById('lista-task');
+            let monthElement = document.getElementById('month');
+            let dayElement = document.getElementById('day');
+            let month = monthElement.innerHTML;
+            let day = dayElement.innerHTML;
+            fetch(
+                '/yourBulletJournal/yourYear/' + month + '/' + day + '/', {
+                    method: 'POST',
+                    body: form,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                }
+            ).then(function (response) {
+                return response.json();
+            }).then(function (data){
+                let myArray = data.tasks;
+                let li = document.createElement('li');
+                li.innerHTML = myArray[myArray.length - 1].to_do;
+                li.setAttribute('id', myArray[myArray.length - 1].id)
+                let i = document.createElement('i');
+                i.setAttribute('class', "fa fa-share");
+                i.setAttribute('aria-hidden', "true");
+                li.appendChild(i);
+                lista.appendChild(li);
+            })
+        }
+        
+    </script>
+</div>
+
+
+{%endblock%}
