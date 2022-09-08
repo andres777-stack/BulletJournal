@@ -68,18 +68,51 @@
                 return response.json();
             }).then(function (data){
                 let myArray = data.tasks;
+                let id = myArray[myArray.length - 1].id;
                 let li = document.createElement('li');
-                li.innerHTML = myArray[myArray.length - 1].to_do;
-                li.setAttribute('id', myArray[myArray.length - 1].id)
+                //insert i bullet
+                let ibullet = document.createElement('i');
+                setAttributes(ibullet, {'class': 'fa fa-circle', 'style': 'font-size: 10px', 'aria-hidden' : 'true', 'id':'i-' + id });
+                li.appendChild(ibullet);
+                li.innerHTML += myArray[myArray.length - 1].to_do;
+                li.setAttribute('id', id)
                 //creating ancor with his attributes
                 let elementAncor = document.createElement('a');
-                setAttributes(elementAncor, {"class": "btn btn-primary", 'href': '/yourBulletJournal/yourYear/migrate-Task/' + myArray[myArray.length - 1].id});
+                setAttributes(elementAncor, {"class": "btn btn-primary", 'href': '/yourBulletJournal/yourYear/migrate-Task/' + id});
                 //creating i elements
                 let i = document.createElement('i');
                 setAttributes(i, {'class': "fa fa-share", 'aria-hidden': "true" })
                 elementAncor.appendChild(i);
                 li.appendChild(elementAncor);
-                lista.appendChild(li);
+                //creating form with his attributes and his children
+                let form = document.createElement('form');
+                setAttributes(form, {'method': 'post', 'style': 'display:inline-block', 'id': 'checkForm'})
+                //creating token
+                let tokenElem = document.createElement('input');
+                setAttributes(tokenElem, {'type': 'hidden', 'name': 'csrfmiddlewaretoken', 'value': '{{ csrf_token }}'})
+                form.appendChild(tokenElem);
+                //creating input hidden
+                let inputHidden = document.createElement('input');
+                setAttributes(inputHidden, {'type': 'hidden', 'name': 'task-id', 'value': id, 'id': "checkInput"})
+                form.appendChild(inputHidden);
+                //creating form button
+                let buttonElement = document.createElement('button');
+                setAttributes(buttonElement, {'type': 'button', 'onclick': 'checkTask()', 'id':'checkBtn', 'class': 'btn btn-success'})
+                let iconElement = document.createElement('i');
+                setAttributes(iconElement, {'class': 'fa fa-check', 'aria-hidden': 'true'})
+                buttonElement.appendChild(iconElement);
+                form.appendChild(buttonElement);
+                //add form to li
+                li.appendChild(form);
+                //creating ancor for delete button 
+                let ancla = document.createElement('a');
+                setAttributes(ancla, {'href': '/yourBulletJournal/yourYear/deleteTask/' + id, 'class': 'btn btn-danger'})
+                let iconElem = document.createElement('i');
+                setAttributes(iconElem, {'class': 'fa fa-trash-o', 'aria-hidden': 'true'});
+                ancla.appendChild(iconElem);
+                //add ancor to li 
+                li.appendChild(ancla);
+                lista.insertBefore(li, lista.firstChild);
             })
         }
 
