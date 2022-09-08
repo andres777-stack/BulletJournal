@@ -41,10 +41,13 @@ def mesdia(request, mes, dia):
             day = Day.objects.create(mes=mes, number=dia)
         
         form = TaskForm()
+        allTaskDone = day.tasks.all().filter(done=True)
+        print(allTaskDone)
 
         context = {
             'dia': day,
             'form': form,
+            'doneTasks': allTaskDone,
         }
 
         return render(request, 'YearMonthDay/day.html', context=context)
@@ -64,40 +67,59 @@ def mesdia(request, mes, dia):
             newTask.save()
             return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':mes, 'dia':dia}))
 
-def migrateTask(request):
-    #retrieve the data
-    id = request.POST.get('id-task')
-    date = request.POST.get('dateMigrate')
-    #format data for datetime object
-    dateStr = date.replace('-', ' ')
-    dateList = dateStr.split()
-    objDate = datetime.datetime(int(dateList[0]), int(dateList[1]), int(dateList[2]))
-    #getting month name and day number from obj
-    month = objDate.strftime("%B") 
-    day = int(objDate.strftime("%d"))
-    task = Task.objects.get(id=id)
-    #saving the data to create reverse url 
-    monthUrl = task.days.mes
-    dayUrl = task.days.number
-    #changing the task foreign key
-    if Day.objects.filter(mes=month, number=day).exists():
-        instance = Day.objects.get(mes=month, number=day)
+def migrateTask(request, id):
+
+    if request.method == 'GET':
+        print('*'*100)
+        print('ok')
+
+        context = {
+            'task': Task.objects.get(id=id), 
+            }
+
+        return render(request, 'YearMonthDay/migrateTask.html', context=context)
+
     else:
-        instance = Day.objects.create(mes=month, number=day)
-    task.days = instance
-    task.save()
+
+        task = Task.objects.get(id=id)
+        previusDay = task.days
+        #to contruct the reverse url
+        dayUrl = previusDay.number
+        monthUrl = previusDay.mes
+        #getting the data from Post
+        date = request.POST.get('dateToMigrate')
+        #format data for datetime object
+        dateStr = date.replace('-', ' ')
+        dateList = dateStr.split()
+        objDate = datetime.datetime(int(dateList[0]), int(dateList[1]), int(dateList[2]))
+        #getting month name and day number from obj
+        month = objDate.strftime("%B") 
+        day = int(objDate.strftime("%d"))
+        #changing the task foreign key
+        if Day.objects.filter(mes=month, number=day).exists():
+            instance = Day.objects.get(mes=month, number=day)
+        else:
+            instance = Day.objects.create(mes=month, number=day)
+        task.days = instance
+        task.save()
+        return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':monthUrl, 'dia': dayUrl}))
+        
+def deleteTask(request, id):
+    task = Task.objects.get(id=id)
+    previusDay = task.days
+    #to contruct the reverse url
+    dayUrl = previusDay.number
+    monthUrl = previusDay.mes
+    task.delete()
     return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':monthUrl, 'dia': dayUrl}))
 
-    
-        
-        
-
-
-    
-
-
-
-
-        
-
+def checkTask(request):
+    print(request.POST)
+    #if request.headers['X-Requested-With'] == 'XMLHttpRequest':
+    id = request.POST['task-id']
+    task = Task.objects.get(id=id)
+    task.done = True
+    task.save()
+    id = task.id
+    return JsonResponse({'task': id})
 # Create your views here.

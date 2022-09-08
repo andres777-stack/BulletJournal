@@ -10,43 +10,24 @@
 
     <form action="" method="post" id="form">
         {% csrf_token %}
-        <table>
-            {{form.as_table}}
-        </table>
+        <label for="to_do">Add a Task:</label>
+        <input type="text" onfocus="this.value=''" name="to_do" id="to_do">
     </form>
-    <button onclick="saveData()">Add task</button>
+    <button onclick="saveData()" id="myBtn">Add task</button>
     <br>
-    <ul id="lista-task">
+    <ul id="lista-task" style="list-style:none">
         {% for task in dia.tasks.all %}
         <li>
+            <i class="fa fa-circle" style="font-size:10px" aria-hidden="true" id="i-{{task.id}}"></i>
             {{task.to_do}}
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal"><i class="fa fa-share" aria-hidden="true"></i></button>
-            <!-- Modal -->
-            <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Migrate Task</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                        <form action="{% url 'YearMonthDay:migrateTask' %}" id="form" method="post">
-                            {% csrf_token %} 
-                            <input type="date" name="dateMigrate">
-                            <input type="hidden" name="id-task" value="{{task.id}}">
-                            <button type="submit">Migrar</button>
-                        </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-success"><i class="fa fa-check" aria-hidden="true"></i></button>
+            <a href= "{% url 'YearMonthDay:migrateTask' id=task.id %}" class="btn btn-primary"><i class="fa fa-share" aria-hidden="true"></i></a>
+            <form action="" method="post" style="display: inline-block" id="checkForm">
+                {% csrf_token %}
+                <input type="hidden" name="task-id" value="{{task.id}}" id="checkInput">
+                <button type="button" onclick="checkTask()" id="checkBtn" class="btn btn-success"><i class="fa fa-check" aria-hidden="true"></i></button>
+            </form>
+            <a href="{% url 'YearMonthDay:deleteTask' id=task.id %}" class="btn btn-danger"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
         </li>
-        {% empty %}
-        <p>There is no task</p>
         {% endfor %}
     </ul>
     
@@ -90,14 +71,69 @@
                 let li = document.createElement('li');
                 li.innerHTML = myArray[myArray.length - 1].to_do;
                 li.setAttribute('id', myArray[myArray.length - 1].id)
+                //creating ancor with his attributes
+                let elementAncor = document.createElement('a');
+                setAttributes(elementAncor, {"class": "btn btn-primary", 'href': '/yourBulletJournal/yourYear/migrate-Task/' + myArray[myArray.length - 1].id});
+                //creating i elements
                 let i = document.createElement('i');
-                i.setAttribute('class', "fa fa-share");
-                i.setAttribute('aria-hidden', "true");
-                li.appendChild(i);
+                setAttributes(i, {'class': "fa fa-share", 'aria-hidden': "true" })
+                elementAncor.appendChild(i);
+                li.appendChild(elementAncor);
                 lista.appendChild(li);
             })
         }
 
+        function checkTask() {
+            let form = new FormData(document.getElementById('checkForm'));
+            fetch(
+                '/yourBulletJournal/yourYear/checkTask/', {
+                    method: 'POST',
+                    body: form,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                }
+            ).then(function (response) {
+                return response.json();
+            }).then(function (data){
+                let task = data.task;
+                let id = task.toString(); 
+                document.getElementById('i-' + id).setAttribute('class', "fa fa-times");
+            })
+        }
+
+        function setAttributes(element, attrs) {
+        for(let key in attrs) {
+            element.setAttribute(key, attrs[key]);
+            }
+        }
+
+        var input = document.getElementById("to_do");
+
+        // Execute a function when the user presses a key on the keyboard
+        input.addEventListener("keypress", function(event) {
+        // If the user presses the "Enter" key on the keyboard
+        if (event.key === "Enter") {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Trigger the button element with a click
+            document.getElementById("myBtn").click();
+            input.value = "";
+        }
+        });
+    
+        
+        function makeid(length) {
+            var result           = '';
+            var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * 
+            charactersLength));
+            }
+            return result;
+        }
         
     </script>
 </div>

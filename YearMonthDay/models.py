@@ -18,7 +18,8 @@ class Day(models.Model):
 class Task(models.Model):
     to_do = models.CharField(max_length=100)
     last_update = models.DateField(auto_now=True)
-    days = models.ForeignKey(Day, related_name='tasks', on_delete= models.CASCADE, null=True, blank=True) 
+    days = models.ForeignKey(Day, related_name='tasks', on_delete= models.CASCADE, null=True, blank=True)
+    done = models.BooleanField(default=False) 
 
     def __str__(self):
         return self.to_do
