@@ -1,5 +1,6 @@
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.http import JsonResponse
+from django.apps import apps
 from YearMonthDay.models import * 
 from YearMonthDay.forms import *
 import datetime
@@ -54,18 +55,28 @@ def mesdia(request, mes, dia):
 
     if request.method == 'POST':
         if request.headers['x-requested-with'] == 'XMLHttpRequest':
-            task = request.POST['to_do']
             instanceDay = Day.objects.get(mes=mes, number=dia)
-            newTask = Task.objects.create(to_do=task, days=instanceDay)
-            newTask.save()
-            data = list(instanceDay.tasks.all().values())
-            return JsonResponse({'tasks': data})
-        else:
-            task = request.POST['to_do']
-            instanceDay = Day.objects.get(mes=mes, number=dia)
-            newTask = Task.objects.create(to_do=task, days=instanceDay)
-            newTask.save()
-            return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':mes, 'dia':dia}))
+            if request.POST.get('to_do', False):
+                #request.POST.get('is_private', False)
+                task = request.POST['to_do']
+                newTask = Task.objects.create(to_do=task, day=instanceDay)
+                data = list(instanceDay.tasks.all().values())
+            if request.POST.get('event', False):
+                event = request.POST['event']
+                newEvent = Event.objects.create(desc=event, day=instanceDay)
+                data = list(instanceDay.events.all().values())
+            if request.POST.get('note', False):
+                note = request.POST['note']
+                newNote = Note.objects.create(text=note, day=instanceDay)
+                newNote.save()
+                data = list(instanceDay.notes.all().values())
+            return JsonResponse({'objects': data})
+        #else:
+        #    task = request.POST['to_do']
+        #    instanceDay = Day.objects.get(mes=mes, number=dia)
+        #    newTask = Task.objects.create(to_do=task, days=instanceDay)
+        #    newTask.save()
+        #    return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':mes, 'dia':dia}))
 
 def migrateTask(request, id):
 
@@ -82,7 +93,7 @@ def migrateTask(request, id):
     else:
 
         task = Task.objects.get(id=id)
-        previusDay = task.days
+        previusDay = task.day
         #to contruct the reverse url
         dayUrl = previusDay.number
         monthUrl = previusDay.mes
@@ -104,13 +115,15 @@ def migrateTask(request, id):
         task.save()
         return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':monthUrl, 'dia': dayUrl}))
         
-def deleteTask(request, id):
-    task = Task.objects.get(id=id)
-    previusDay = task.days
+def delete(request, model, id):
+    #obj represent a task object, event object or note object.
+    Model = apps.get_model('YearMonthDay', model)
+    obj = Model.objects.get(id=id)
+    previusDay = obj.day
     #to contruct the reverse url
     dayUrl = previusDay.number
     monthUrl = previusDay.mes
-    task.delete()
+    obj.delete()
     return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':monthUrl, 'dia': dayUrl}))
 
 def checkTask(request):

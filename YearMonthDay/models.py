@@ -11,6 +11,8 @@ class Day(models.Model):
     mes = models.CharField(max_length=20, null=True)
     number = models.CharField(max_length=20)
     #tasks
+    #events
+    #notes
 
     def __str__(self):
         return self.mes + self.number
@@ -18,11 +20,35 @@ class Day(models.Model):
 class Task(models.Model):
     to_do = models.CharField(max_length=100)
     last_update = models.DateField(auto_now=True)
-    days = models.ForeignKey(Day, related_name='tasks', on_delete= models.CASCADE, null=True, blank=True)
-    done = models.BooleanField(default=False) 
+    day = models.ForeignKey(Day, related_name='tasks', on_delete= models.CASCADE, null=True, blank=True)
+    done = models.BooleanField(default=False)
+
+    def class_name(self):
+        return self.__class__.__name__ 
 
     def __str__(self):
         return self.to_do
+
+class Event(models.Model):
+    desc = models.CharField(max_length=50)
+    day = models.ForeignKey(Day, related_name='events', on_delete= models.CASCADE, null=True, blank=True)
+    done = models.BooleanField(default=False) 
+
+    def class_name(self):
+        return self.__class__.__name__ 
+
+    def __str__(self):
+        return self.desc
+
+class Note(models.Model):
+    text = models.CharField(max_length=100)
+    day = models.ForeignKey(Day, related_name='notes', on_delete= models.CASCADE, null=True, blank=True)
+
+    def class_name(self):
+        return self.__class__.__name__ 
+
+    def __str__(self):
+        return self.text
 
 
 
