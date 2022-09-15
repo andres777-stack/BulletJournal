@@ -78,22 +78,22 @@ def mesdia(request, mes, dia):
         #    newTask.save()
         #    return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':mes, 'dia':dia}))
 
-def migrateTask(request, id):
+def migrate(request, model, id):
 
     if request.method == 'GET':
-        print('*'*100)
-        print('ok')
+
+        Model = apps.get_model('YearMonthDay', model)
 
         context = {
-            'task': Task.objects.get(id=id), 
+            'obj': Model.objects.get(id=id), 
             }
 
-        return render(request, 'YearMonthDay/migrateTask.html', context=context)
+        return render(request, 'YearMonthDay/migrate.html', context=context)
 
     else:
-
-        task = Task.objects.get(id=id)
-        previusDay = task.day
+        Model = apps.get_model('YearMonthDay', model)
+        obj = Model.objects.get(id=id)
+        previusDay = obj.day
         #to contruct the reverse url
         dayUrl = previusDay.number
         monthUrl = previusDay.mes
@@ -102,6 +102,8 @@ def migrateTask(request, id):
         #format data for datetime object
         dateStr = date.replace('-', ' ')
         dateList = dateStr.split()
+        print('*'*90)
+        print(dateList)
         objDate = datetime.datetime(int(dateList[0]), int(dateList[1]), int(dateList[2]))
         #getting month name and day number from obj
         month = objDate.strftime("%B") 
@@ -111,8 +113,8 @@ def migrateTask(request, id):
             instance = Day.objects.get(mes=month, number=day)
         else:
             instance = Day.objects.create(mes=month, number=day)
-        task.days = instance
-        task.save()
+        obj.day = instance
+        obj.save()
         return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':monthUrl, 'dia': dayUrl}))
         
 def delete(request, model, id):
@@ -126,13 +128,31 @@ def delete(request, model, id):
     obj.delete()
     return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':monthUrl, 'dia': dayUrl}))
 
+def getOnlyWords(value):
+    valids = []
+    for character in value:
+        if character.isalpha():
+            valids.append(character)
+    return ''.join(valids)
+
+def getOnlyInt(value):
+    valids = []
+    for character in value:
+        if not character.isalpha():
+            valids.append(character)
+    return int(''.join(valids))
+
 def checkTask(request):
+    print('*'*90)
     print(request.POST)
+    print(request.POST['obj-id'])
     #if request.headers['X-Requested-With'] == 'XMLHttpRequest':
-    id = request.POST['task-id']
-    task = Task.objects.get(id=id)
-    task.done = True
-    task.save()
-    id = task.id
-    return JsonResponse({'task': id})
+    id = getOnlyInt(request.POST['obj-id'])
+    modelStr = getOnlyWords(request.POST['obj-id'])
+    Model = apps.get_model('YearMonthDay', modelStr)
+    obj = Model.objects.get(id=id)
+    obj.done = True
+    obj.save()
+    id = obj.id
+    return JsonResponse({'obj': id, 'model': modelStr})
 # Create your views here.

@@ -21,11 +21,11 @@
                 <li>
                     <i class="fa fa-circle" style="font-size:10px" aria-hidden="true" id="i-{{task.id}}"></i>
                     {{task.to_do}}
-                    <a href= "{% url 'YearMonthDay:migrateTask' id=task.id %}" class="btn btn-primary"><i class="fa fa-share" aria-hidden="true"></i></a>
-                    <form action="" method="post" style="display: inline-block" id="checkForm">
+                    <a href= "{% url 'YearMonthDay:migrate' model=task.class_name id=task.id %}" class="btn btn-primary"><i class="fa fa-share" aria-hidden="true"></i></a>
+                    <form action="" method="post" style="display: inline-block" id="checkForm{{task.class_name}}{{task.id}}">
                         {% csrf_token %}
-                        <input type="hidden" name="task-id" value="{{task.id}}" id="checkInput">
-                        <button type="button" onclick="checkTask()" id="checkBtn" class="btn btn-success"><i class="fa fa-check" aria-hidden="true"></i></button>
+                        <input type="hidden" name="obj-id" value="{{task.id}}{{task.class_name}}" id="checkInput">
+                        <button type="button" onclick="checkTask(event)" id="checkBtn" class="btn btn-success"><i class="fa fa-check" aria-hidden="true" id="{{task.id}} {{task.class_name}}"></i></button>
                     </form>
                     <a href="{% url 'YearMonthDay:delete' model=task.class_name id=task.id %}" class="btn btn-danger"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
                 </li>
@@ -33,12 +33,12 @@
                 {% for event in dia.events.all %}
                 <li>
                     <i class="fa fa-caret-up" style="font-size:10px" aria-hidden="true" id="eventSymbol-{{event.id}}"></i>
-                    {{event.desc}}
-                    <a href= "{% url 'YearMonthDay:migrateTask' id=event.id %}" class="btn btn-primary"><i class="fa fa-share" aria-hidden="true"></i></a>
-                    <form action="" method="post" style="display: inline-block" id="checkForm">
+                    <p style="display: inline-block" id="p{{event.id}}">{{event.desc}}</p>
+                    <a href= "{% url 'YearMonthDay:migrate' model=event.class_name id=event.id %}" class="btn btn-primary"><i class="fa fa-share" aria-hidden="true"></i></a>
+                    <form action="" method="post" style="display: inline-block" id="checkForm{{event.class_name}}{{event.id}}">
                         {% csrf_token %}
-                        <input type="hidden" name="event-id" value="{{event.id}}" id="checkInput">
-                        <button type="button" onclick="checkTask()" id="checkBtn" class="btn btn-success"><i class="fa fa-check" aria-hidden="true"></i></button>
+                        <input type="hidden" name="obj-id" value="{{event.id}}{{event.class_name}}" id="checkInput">
+                        <button type="button" onclick="checkTask(event)" id="checkBtn" class="btn btn-success"><i class="fa fa-check" aria-hidden="true" id="{{event.id}} {{event.class_name}}"></i></button>
                     </form>
                     <a href="{% url 'YearMonthDay:delete' model=event.class_name id=event.id %}" class="btn btn-danger"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
                 </li>
@@ -113,7 +113,7 @@
                     li.setAttribute('id', id)
                     //creating ancor with his attributes
                     let elementAncor = document.createElement('a');
-                    setAttributes(elementAncor, {"class": "btn btn-primary", 'href': '/yourBulletJournal/yourYear/migrate-Task/' + id});
+                    setAttributes(elementAncor, {"class": "btn btn-primary", 'href': '/yourBulletJournal/yourYear/migrate/Task/' + id});
                     //creating i elements
                     let i = document.createElement('i');
                     setAttributes(i, {'class': "fa fa-share", 'aria-hidden': "true" })
@@ -121,27 +121,27 @@
                     li.appendChild(elementAncor);
                     //creating form with his attributes and his children
                     let form = document.createElement('form');
-                    setAttributes(form, {'method': 'post', 'style': 'display:inline-block', 'id': 'checkForm'})
+                    setAttributes(form, {'method': 'post', 'style': 'display:inline-block', 'id': 'checkFormTask' + id})
                     //creating token
                     let tokenElem = document.createElement('input');
                     setAttributes(tokenElem, {'type': 'hidden', 'name': 'csrfmiddlewaretoken', 'value': '{{ csrf_token }}'})
                     form.appendChild(tokenElem);
                     //creating input hidden
                     let inputHidden = document.createElement('input');
-                    setAttributes(inputHidden, {'type': 'hidden', 'name': 'task-id', 'value': id, 'id': "checkInput"})
+                    setAttributes(inputHidden, {'type': 'hidden', 'name': 'obj-id', 'value': 'Task' + id, 'id': "checkInput"})
                     form.appendChild(inputHidden);
                     //creating form button
                     let buttonElement = document.createElement('button');
-                    setAttributes(buttonElement, {'type': 'button', 'onclick': 'checkTask()', 'id':'checkBtn', 'class': 'btn btn-success'})
+                    setAttributes(buttonElement, {'type': 'button', 'onclick': 'checkTask(event)', 'id': id + ' Task', 'class': 'btn btn-success'})
                     let iconElement = document.createElement('i');
-                    setAttributes(iconElement, {'class': 'fa fa-check', 'aria-hidden': 'true'})
+                    setAttributes(iconElement, {'class': 'fa fa-check', 'aria-hidden': 'true', 'id': id + ' Task'})
                     buttonElement.appendChild(iconElement);
                     form.appendChild(buttonElement);
                     //add form to li
                     li.appendChild(form);
                     //creating ancor for delete button 
                     let ancla = document.createElement('a');
-                    setAttributes(ancla, {'href': '/yourBulletJournal/yourYear/deleteTask/' + id, 'class': 'btn btn-danger'})
+                    setAttributes(ancla, {'href': '/yourBulletJournal/yourYear/delete/Task/' + id, 'class': 'btn btn-danger'})
                     let iconElem = document.createElement('i');
                     setAttributes(iconElem, {'class': 'fa fa-trash-o', 'aria-hidden': 'true'});
                     ancla.appendChild(iconElem);
@@ -153,10 +153,48 @@
                     let dashElement = document.createElement('i');
                     setAttributes(dashElement, {'class': 'fa fa-caret-up', 'aria-hidden': 'true'});
                     li.appendChild(dashElement);
-                    li.innerHTML += myArray[myArray.length - 1].desc;
-                    console.log(li);
+                    let paragraph = document.createElement('p');
+                    setAttributes(paragraph, {'style': 'display:inline-block', 'id': 'p' + id})
+                    paragraph.innerHTML = myArray[myArray.length - 1].desc;
+                    li.appendChild(paragraph);
+                    //creating ancor with his attributes
+                    let elementAncor = document.createElement('a');
+                    setAttributes(elementAncor, {"class": "btn btn-primary", 'href': '/yourBulletJournal/yourYear/migrate/Event/' + id});
+                    //creating i elements
+                    let i = document.createElement('i');
+                    setAttributes(i, {'class': "fa fa-share", 'aria-hidden': "true" })
+                    elementAncor.appendChild(i);
+                    li.appendChild(elementAncor);
+                    //creating form with his attributes and his children
+                    let form = document.createElement('form');
+                    setAttributes(form, {'method': 'post', 'style': 'display:inline-block', 'id': 'checkFormEvent' + id})
+                    //creating token
+                    let tokenElem = document.createElement('input');
+                    setAttributes(tokenElem, {'type': 'hidden', 'name': 'csrfmiddlewaretoken', 'value': '{{ csrf_token }}'})
+                    form.appendChild(tokenElem);
+                    //creating input hidden
+                    let inputHidden = document.createElement('input');
+                    setAttributes(inputHidden, {'type': 'hidden', 'name': 'obj-id', 'value': 'Event' + id, 'id': "checkInput"})
+                    form.appendChild(inputHidden);
+                    //creating form button
+                    let buttonElement = document.createElement('button');
+                    setAttributes(buttonElement, {'type': 'button', 'onclick': 'checkTask(event)', 'id': id + ' Event', 'class': 'btn btn-success'})
+                    let iconElement = document.createElement('i');
+                    setAttributes(iconElement, {'class': 'fa fa-check', 'aria-hidden': 'true', 'id': id + ' Event'})
+                    buttonElement.appendChild(iconElement);
+                    form.appendChild(buttonElement);
+                    //add form to li
+                    li.appendChild(form);
+                    //creating ancor for delete button 
+                    let ancla = document.createElement('a');
+                    setAttributes(ancla, {'href': '/yourBulletJournal/yourYear/delete/Event/' + id, 'class': 'btn btn-danger'})
+                    let iconElem = document.createElement('i');
+                    setAttributes(iconElem, {'class': 'fa fa-trash-o', 'aria-hidden': 'true'});
+                    ancla.appendChild(iconElem);
+                    //add ancor to li 
+                    li.appendChild(ancla);
                     lista.insertBefore(li, lista.firstChild);
-                    //<i class="fa fa-minus" aria-hidden="true"></i>
+                    
                 } else {
                     //insert triangle symbol
                     let triangleElement = document.createElement('i');
@@ -170,8 +208,16 @@
             })
         }
 
-        function checkTask() {
-            let form = new FormData(document.getElementById('checkForm'));
+        function checkTask(event) {
+            console.log(event.target);
+            //Take the id and model name to construct the CheckForm id
+            let id_model = event.target.id;
+            console.log(id_model);
+            let modelName = getModelName(id_model);
+            let task_id = getTaskId(id_model);
+            console.log(task_id, modelName);
+            console.log(document.getElementById('checkForm' + modelName + task_id));
+            let form = new FormData(document.getElementById('checkForm' + modelName + task_id));
             fetch(
                 '/yourBulletJournal/yourYear/checkTask/', {
                     method: 'POST',
@@ -184,9 +230,17 @@
             ).then(function (response) {
                 return response.json();
             }).then(function (data){
-                let task = data.task;
-                let id = task.toString(); 
-                document.getElementById('i-' + id).setAttribute('class', "fa fa-times");
+                let model = data.model;
+                if(model == 'Task'){
+                    console.log(model);
+                    let obj = data.obj;
+                    let id = obj.toString(); 
+                    document.getElementById('i-' + id).setAttribute('class', "fa fa-times");
+                } else {
+                    let obj = data.obj;
+                    let id = obj.toString(); 
+                    document.getElementById('p' + id).setAttribute('style', "display: inline-block; text-decoration: line-through;");
+                }
             })
         }
 
@@ -194,6 +248,16 @@
         for(let key in attrs) {
             element.setAttribute(key, attrs[key]);
             }
+        }
+
+        function getModelName(value) {
+            let myArray = value.split(" ");
+            return myArray[1];
+        }
+
+        function getTaskId(value) {
+            let myArray = value.split(" ");
+            return myArray[0];
         }
 
         var input = document.getElementById("to_do");

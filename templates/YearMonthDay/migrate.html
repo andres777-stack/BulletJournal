@@ -5,11 +5,11 @@
 {% block content %} 
 
 <div>
-    <h3>Task: {{task.to_do}}</h3>
-    <h3>Day: {{task.days.mes}} {{task.days.number}}</h3>
+    <h3>{{obj.class_name}}: {{obj}}</h3>
+    <h3>Day: {{obj.day.mes}} - {{obj.day.number}}</h3>
     <form action="" method="post">
         {% csrf_token %}
-        <label for="date">Pick a date to migrate your task</label>
+        <label for="date">Pick up a date to migrate your {{obj.class_name|lower}}</label>
         <input type="date" id="date" name="dateToMigrate">
         <button type="submit" class="btn btn-info">Migrar</button>
     </form>

@@ -7,9 +7,9 @@ app_name = 'YearMonthDay'
 urlpatterns = [
     path('', views.index, name = 'index'),
     path('yourYear/', views.yourYear, name = 'yourYear'),
-    path('yourYear/migrate-Task/<int:id>', views.migrateTask, name = 'migrateTask'),
     path('yourYear/checkTask/', views.checkTask, name = 'checkTask'),
+    re_path(r'^yourYear/migrate/(?P<model>[A-Za-z]+)/(?P<id>\d+)/$', views.migrate, name = 'migrate'),
     re_path(r'^yourYear/(?P<mes>[A-Za-z]+)/(?P<dia>\d+)/$', views.mesdia, name='myDay'),
-    re_path(r'yourYear/delete/(?P<model>[A-Za-z]+)/(?P<id>\d+)/$', views.delete, name = 'delete'),
+    re_path(r'^yourYear/delete/(?P<model>[A-Za-z]+)/(?P<id>\d+)/$', views.delete, name = 'delete'),
     
 ]
