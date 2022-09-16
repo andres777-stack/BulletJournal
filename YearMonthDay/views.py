@@ -105,7 +105,7 @@ def migrate(request, model, id):
         print('*'*90)
         print(dateList)
         objDate = datetime.datetime(int(dateList[0]), int(dateList[1]), int(dateList[2]))
-        #getting month name and day number from obj
+        #getting month name and day number from objDate
         month = objDate.strftime("%B") 
         day = int(objDate.strftime("%d"))
         #changing the task foreign key

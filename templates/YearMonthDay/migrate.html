@@ -7,12 +7,16 @@
 <div>
     <h3>{{obj.class_name}}: {{obj}}</h3>
     <h3>Day: {{obj.day.mes}} - {{obj.day.number}}</h3>
+    {% if obj.done == False %}
     <form action="" method="post">
         {% csrf_token %}
         <label for="date">Pick up a date to migrate your {{obj.class_name|lower}}</label>
         <input type="date" id="date" name="dateToMigrate">
         <button type="submit" class="btn btn-info">Migrar</button>
     </form>
+    {% else %}
+    <h3>The {{obj.class_name|lower}} is already done. You cannot migrate it.</h3>
+    {% endif %}
 </div>
 
 {% endblock %}

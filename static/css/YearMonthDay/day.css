@@ -1,0 +1,41 @@
+.container{
+    width:50%;
+    margin:0 auto;
+    padding-top: 50px;
+    border: 1px solid gray;
+}
+
+.title_link{
+    display: flex;
+    justify-content: space-around;
+}
+
+.title_link a {
+    margin-top:5px;
+}
+.buttons_form{
+    display: flex;
+    justify-content: center;
+}
+
+.buttons{
+    display: flex;
+    width: 35%;
+}
+
+.button{
+    margin-left: 5px;
+}
+
+
+.form_button{
+    display: flex;
+}
+
+/*styling element in ul*/
+li {
+    display:flex;
+    justify-content: space-between;
+    border-bottom: 1px solid gray;
+    margin-top: 5px;
+}
