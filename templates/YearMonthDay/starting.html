@@ -3,19 +3,52 @@
 {% block title %}Starting Your BulletJournal{%endblock%}
 
 {%block content%} 
-
-<h1>Wellcome to BulletJournal</h1>
-
-<p>Write your goals for this year!</p>
-<form action="" method="post" id="fo_rm">
-    {% csrf_token %}
-    <table>
-        {{form.as_table}}
-    </table>
-    <button type="submit">Listo!</button>
-</form>
-<div id="goals-container">
+<div class="content-start" style="display:flex; justify-content:center;">
+    <div>
+        <div class="text">
+        <h1 style="margin-top: 40px;">Wellcome to <i>BulletJournal.com</i></h1>
+        <p>Write your goals for this year!</p>
+        </div>
+        <div class="list-goals">
+            <input type="text" id="input"><button onclick="addGoal()">Add goal</button>
+            <ul id="list" style="list-style:none">
+            </ul>
+        </div>
+        <form action="" method="post" id="form">
+            {% csrf_token %} 
+        </form>
+        <button type="button" class="btn btn-success" id="button" onclick="addInput()">Get Start!</button>
+    </div>
 </div>
+
+<script>
+    function addGoal(){
+        let inputElement = document.getElementById("input").value;
+        let listElement = document.createElement("li");
+        listElement.innerHTML = inputElement;
+        document.getElementById("list").appendChild(listElement);
+        document.getElementById("input").value = "";
+    }
+
+    function addInput() {
+        let goals = document.getElementsByTagName("li");
+        for(let i=0; i < goals.length; i++) {
+            let newInput = document.createElement("input");
+            setAttributes(newInput, {'type': 'hidden', 'name':'goal' + i, 'value': goals[i].innerHTML});
+            let form = document.getElementById("form");
+            form.appendChild(newInput);
+        }
+        let form = document.getElementById("form");
+        form.submit();
+
+    }
+
+    function setAttributes(element, attrs) {
+        for(let key in attrs) {
+            element.setAttribute(key, attrs[key]);
+            }
+        }
+</script>
 
 
 {%endblock%} 

@@ -1,7 +1,7 @@
 {% extends 'base.html'%}
 {% load static %} 
 {% block styles %} <link rel="stylesheet" href="{% static 'css/YearMonthDay/day.css' %}"> {% endblock %}
-{% block title %} {{Day}} {{month}} {%endblock%}
+{% block title %} {{dia.number}} {{dia.mes}} {%endblock%}
 
 {% block content%} 
 <div class="container">
@@ -53,7 +53,7 @@
         {% for event in dia.events.all %}
         <li>
             <div class="icon_text">
-                <i class="fa fa-caret-up" style="font-size:10px" aria-hidden="true" id="eventSymbol-{{event.id}}"></i>
+                <i class="fa fa-caret-up" style="font-size:15px" aria-hidden="true" id="eventSymbol-{{event.id}}"></i>
                 {% if event.done == False %}
                 <p style="display: inline-block" id="p{{event.id}}">{{event.desc}}</p>
                 {% else %} 
@@ -153,6 +153,7 @@
                 if(myArray[myArray.length - 1].to_do){
                     let iconTextDiv = document.createElement('div');
                     iconTextDiv.setAttribute('class', 'icon_text');
+                    iconTextDiv.setAttribute('style', 'max-width:75%')
                     //insert i bullet
                     let ibullet = document.createElement('i');
                     setAttributes(ibullet, {'class': 'fa fa-circle', 'style': 'font-size: 10px; padding-right: 5px;', 'aria-hidden' : 'true', 'id':'i-' + id });
@@ -201,10 +202,11 @@
                 }else if(myArray[myArray.length - 1].desc){
                     let iconTextDiv = document.createElement('div');
                     iconTextDiv.setAttribute('class', 'icon_text');
+                    iconTextDiv.setAttribute('style', 'max-width:75%')
                     //insert a dash symbol
-                    let dashElement = document.createElement('i');
-                    setAttributes(dashElement, {'class': 'fa fa-caret-up', 'aria-hidden': 'true'});
-                    iconTextDiv.appendChild(dashElement);
+                    let triangleElement = document.createElement('i');
+                    setAttributes(triangleElement, {'class': 'fa fa-caret-up','style': 'margin-right:5px;' ,'aria-hidden': 'true'});
+                    iconTextDiv.appendChild(triangleElement);
                     let paragraph = document.createElement('p');
                     setAttributes(paragraph, {'style': 'display:inline-block', 'id': 'p' + id})
                     paragraph.innerHTML = myArray[myArray.length - 1].desc;
@@ -252,6 +254,7 @@
                 } else {
                     let iconTextDiv = document.createElement('div');
                     iconTextDiv.setAttribute('class', 'icon_text');
+                    iconTextDiv.setAttribute('style', 'max-width:75%');
                     //insert triangle symbol
                     let triangleElement = document.createElement('i');
                     setAttributes(triangleElement, {'class': 'fa fa-minus', 'style': 'font-size:10px; margin-right:5px;', 'aria-hidden': 'true'});
@@ -270,7 +273,7 @@
                     actionsDiv.appendChild(elementAncor);
                     //creating ancor for delete button 
                     let ancla = document.createElement('a');
-                    setAttributes(ancla, {'href': '/yourBulletJournal/yourYear/delete/Note/' + id, 'class': 'btn btn-danger'})
+                    setAttributes(ancla, {'style': 'margin-left: 5px;', 'href': '/yourBulletJournal/yourYear/delete/Note/' + id, 'class': 'btn btn-danger'})
                     let iconElem = document.createElement('i');
                     setAttributes(iconElem, {'class': 'fa fa-trash-o', 'aria-hidden': 'true'});
                     ancla.appendChild(iconElem);

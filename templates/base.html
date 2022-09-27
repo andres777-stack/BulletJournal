@@ -17,7 +17,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>{% block title %}{% endblock %}</title>
 </head>
-<body>
+<body style="padding-top: 30px;">
+    <nav class="navbar fixed-top navbar-dark bg-primary">
+        <a class="navbar-brand" style="margin-left:20px;" href="{% url 'YearMonthDay:index' %}">Bullet Journal</a>
+        <div class="content-nav" style="margin: 0 auto;">
+        <a class="navbar-brand" href="{% url 'YearMonthDay:yourYear' %}">My Year</a>
+        <a class="navbar-brand" href="#">My Goals</a>
+        <a class="navbar-brand" href="#">My Projects</a>
+        </div>
+        <div class="login-nav" style="float:right; margin-right:40px;">
+            <a class="navbar-brand" href="#">Login</a>
+        </div>
+    </nav>
     {% block content %}
     
     {% endblock %}

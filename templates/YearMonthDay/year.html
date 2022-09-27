@@ -11,11 +11,6 @@
         {%endfor%}
         {% endautoescape %}
     </div>
-    <ul>
-        {% for goal in goals%}
-        <li>{{goal.goal}}</li>
-        {%endfor%}
-    </ul>
 </div>
 <script>
 
@@ -32,6 +27,7 @@
             tdElements[i].id = tdElements[i].innerHTML;
             tdElements[i].innerHTML = '';
             let ancor = document.createElement('a');
+            ancor.setAttribute('style', 'text-decoration: none');
             ancor.innerHTML = tdElements[i].id
             ancor.href = theMonths[j] + '/' + tdElements[i].id + '/';
             tdElements[i].appendChild(ancor);
