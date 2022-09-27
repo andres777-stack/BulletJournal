@@ -11,8 +11,7 @@ def index(request):
         return render(request, 'YearMonthDay/starting.html', context={'form': startingForm})
     if request.method == 'POST':
         for value in request.POST.values():
-            newGoal = Goal.objects.create(goal=value)
-            #newGoal.save()
+            Goal.objects.create(goal=value)
         return redirect(reverse('YearMonthDay:yourYear'))
 
 def yourYear(request):
@@ -48,7 +47,6 @@ def mesdia(request, mes, dia):
         context = {
             'dia': day,
             'form': form,
-            'doneTasks': allTaskDone,
         }
 
         return render(request, 'YearMonthDay/day.html', context=context)
@@ -57,26 +55,18 @@ def mesdia(request, mes, dia):
         if request.headers['x-requested-with'] == 'XMLHttpRequest':
             instanceDay = Day.objects.get(mes=mes, number=dia)
             if request.POST.get('to_do', False):
-                #request.POST.get('is_private', False)
                 task = request.POST['to_do']
-                newTask = Task.objects.create(to_do=task, day=instanceDay)
+                Task.objects.create(to_do=task, day=instanceDay)
                 data = list(instanceDay.tasks.all().values())
             if request.POST.get('event', False):
                 event = request.POST['event']
-                newEvent = Event.objects.create(desc=event, day=instanceDay)
+                Event.objects.create(desc=event, day=instanceDay)
                 data = list(instanceDay.events.all().values())
             if request.POST.get('note', False):
                 note = request.POST['note']
                 newNote = Note.objects.create(text=note, day=instanceDay)
-                newNote.save()
                 data = list(instanceDay.notes.all().values())
             return JsonResponse({'objects': data})
-        #else:
-        #    task = request.POST['to_do']
-        #    instanceDay = Day.objects.get(mes=mes, number=dia)
-        #    newTask = Task.objects.create(to_do=task, days=instanceDay)
-        #    newTask.save()
-        #    return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':mes, 'dia':dia}))
 
 def migrate(request, model, id):
 
@@ -143,10 +133,6 @@ def getOnlyInt(value):
     return int(''.join(valids))
 
 def checkTask(request):
-    print('*'*90)
-    print(request.POST)
-    print(request.POST['obj-id'])
-    #if request.headers['X-Requested-With'] == 'XMLHttpRequest':
     id = getOnlyInt(request.POST['obj-id'])
     modelStr = getOnlyWords(request.POST['obj-id'])
     Model = apps.get_model('YearMonthDay', modelStr)
