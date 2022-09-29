@@ -1,30 +1,28 @@
 {% extends 'base.html'%} 
-
+{% load static %} 
+{% block styles %} <link rel="stylesheet" href="{% static 'css/YearMonthDay/starting.css' %}"> {% endblock %}
 {% block title %}Starting Your BulletJournal{%endblock%}
 
 {%block content%} 
-<div class="content-start" style="display:flex; justify-content:center;">
-    <div>
-        <div class="text">
-        <h1 style="margin-top: 40px;">Wellcome to <i>BulletJournal.com</i></h1>
-        <p>Write your goals for this year!</p>
-        </div>
+<div class="content-start">
+        <h1>Wellcome to <i>BulletJournal.com</i></h1>
         <div class="list-goals">
-            <input type="text" id="input"><button onclick="addGoal()">Add goal</button>
-            <ul id="list" style="list-style:none">
-            </ul>
+            <label for="input">Write your goals for this year:</label>
+            <input type="text" id="input" required><button id="buttonAdd" onclick="addGoal()">Add goal</button>
+            <ol id="list">
+            </ol>
         </div>
         <form action="" method="post" id="form">
             {% csrf_token %} 
         </form>
         <button type="button" class="btn btn-success" id="button" onclick="addInput()">Get Start!</button>
-    </div>
 </div>
 
 <script>
     function addGoal(){
         let inputElement = document.getElementById("input").value;
         let listElement = document.createElement("li");
+        setAttributes(listElement, {"style": 'font-size:40px; font-style:italic;'})
         listElement.innerHTML = inputElement;
         document.getElementById("list").appendChild(listElement);
         document.getElementById("input").value = "";
@@ -32,7 +30,10 @@
 
     function addInput() {
         let goals = document.getElementsByTagName("li");
-        for(let i=0; i < goals.length; i++) {
+        if(goals.length == 0) {
+            alert("Please select a goal");
+        } else {
+            for(let i=0; i < goals.length; i++) {
             let newInput = document.createElement("input");
             setAttributes(newInput, {'type': 'hidden', 'name':'goal' + i, 'value': goals[i].innerHTML});
             let form = document.getElementById("form");
@@ -40,6 +41,8 @@
         }
         let form = document.getElementById("form");
         form.submit();
+        }
+        
 
     }
 

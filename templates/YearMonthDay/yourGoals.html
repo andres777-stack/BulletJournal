@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %} 
+{% block styles %} <link rel="stylesheet" href="{% static 'css/YearMonthDay/yourGoals.css' %}"> {% endblock %}
+{% block title %} Your Goals {% endblock %} 
+
+{% block content %} 
+
+<div class="container">
+    <h3>Your goals:</h3>
+    <ul class="list">
+        {% for goal in goals %}
+        <li>{{goal}}</li>
+        {% empty %}
+        <li>There is no goals yet.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %} 

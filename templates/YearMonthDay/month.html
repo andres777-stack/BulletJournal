@@ -1,0 +1,20 @@
+{% extends 'base.html'%} 
+{% load static %} 
+{% block styles %} <link rel="stylesheet" href="{% static 'css/YearMonthDay/month.css' %}"> {% endblock %}
+{% block title %}Your Month{%endblock%}
+
+{%block content%} 
+
+<div class="content-month">
+        <h3>Your Month</h3>
+        <form action="" method="post">
+            <label for="input">Write one important task or event for each day of the month</label>
+            <input type="text" id="input" name="importantTask">
+            <input type="date" id="date" name="date" 
+            min="{{year}}-{{monthInt}}-01" max="{{year}}-{{monthInt}}-{{daysOfMonth}}">
+        </form>
+</div>
+
+
+
+{%endblock%} 

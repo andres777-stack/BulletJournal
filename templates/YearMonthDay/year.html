@@ -44,6 +44,19 @@
             anclas[i].innerHTML = '';
         }
     }
+
+    let months = document.getElementsByClassName('month');
+    for(let i=1; i<months.length; i += 2){
+        let nameMonth = months[i].innerHTML.replace(/ /g,'');
+        months[i].id = nameMonth;
+        months[i].innerHTML = '';
+        let ancor = document.createElement('a');
+        ancor.setAttribute('style', 'text-decoration: none');
+        ancor.innerHTML = nameMonth;
+        ancor.href = nameMonth + '/';
+        months[i].appendChild(ancor);
+    }
+
 </script>
 {% endblock %}
 

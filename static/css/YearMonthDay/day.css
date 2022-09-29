@@ -17,12 +17,31 @@
     justify-content: center;
 }
 
+#myBtn {
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    border-radius: 3px;
+    font-weight: bold;
+    transition: opacity 0.15s;
+}
+
+#myBtn:hover {
+    opacity: 0.7;
+}
+
+#myBtn:active {
+    opacity: 0.5;
+}
+
 .buttons{
     display: flex;
     width: 35%;
+    margin-right: 15px;
 }
 
 .button{
+    width: 80px;
     margin-left: 5px;
     background-color: white;
     border: none;
@@ -31,6 +50,21 @@
     font-weight: bold;
     transition: opacity 0.15s;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.4);
+}
+
+#EventDot {
+    font-size: 20px;
+    margin-right: 2px;
+}
+
+#NoteDot {
+    font-size: 15px;
+    margin-right: 2px;
+}
+
+#TaskDot {
+    font-size: 12px;
+    margin-right: 2px;
 }
 
 .button:hover {

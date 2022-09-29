@@ -10,8 +10,10 @@ def index(request):
     if request.method == 'GET':
         return render(request, 'YearMonthDay/starting.html', context={'form': startingForm})
     if request.method == 'POST':
-        for value in request.POST.values():
-            Goal.objects.create(goal=value)
+        print(request.POST)
+        for key, value in request.POST.items():
+            if 'goal' in key:
+                Goal.objects.create(goal=value)
         return redirect(reverse('YearMonthDay:yourYear'))
 
 def yourYear(request):
@@ -20,16 +22,42 @@ def yourYear(request):
         date = datetime.datetime.now().date()
         year = date.strftime("%Y")
         month = date.strftime("%m")
+        print(month)
 
         #creating each month
 
         myarr = []
-        for i in range(int(month), 13, 1):
+        for i in range(1, 13, 1):
             mc = calendar.HTMLCalendar()
             mc = mc.formatmonth(int(year), int(i))
             monthName = calendar.month_name[i]
             myarr.append({'mc': mc, 'monthName': monthName})
         return render(request, 'YearMonthDay/year.html', context={'goals': goals, 'months': myarr})
+
+def yourGoals(request):
+
+    context = {
+        'goals': Goal.objects.all().order_by('-id')[:3]
+        }
+
+    return render(request, 'YearMonthDay/yourGoals.html', context=context)
+    
+
+def yourMonth(request, mes):
+    month = getOnlyWords(mes)
+    year = getOnlyInt(mes)
+    month_number = datetime.datetime.strptime(month[:3], '%b').month
+    daysInMonth= calendar.monthrange(year, month_number)[1]
+    if len(str(month_number)) == 1:
+        month_number = '0' + str(month_number)
+    
+    context = {
+        'monthStr': month,
+        'monthInt': month_number,
+        'year': year,
+        'daysOfMonth': daysInMonth,
+    }
+    return render(request, 'YearMonthDay/month.html', context=context)
 
 def mesdia(request, mes, dia):
 
