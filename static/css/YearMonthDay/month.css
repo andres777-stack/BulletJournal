@@ -1,3 +1,76 @@
 .content-month{
-    padding-top: 100px;
+    padding-top: 30px;
+}
+
+#month {
+    color: red;
+    width: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#instruction{
+    font-size: 20px;
+    text-align: center;
+    margin: 10px;
+}
+
+#form {
+    display: flex;
+    justify-content:center;
+}
+
+input {
+    margin-left: 5px;
+}
+
+#inputText{
+    width:300px;
+
+}
+
+#date{
+    padding-left: 5px;
+    padding-right:5px;
+}
+
+#button {
+    background-color: rgba(212, 16, 16, 0.945);
+    color: white;
+    width: 100px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-left: 5px;
+    margin-bottom: 5px;
+    transition: opacity 0.15s;
+    border-radius: 10px;
+}
+
+#button:hover {
+    opacity: 0.7;
+}
+
+#button:active {
+    opacity: 0.5;
+}
+
+.content-list {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+ol {
+    width: 30%;
+}
+
+
+li {
+    border-bottom: 1px solid black;
+}
+
+p {
+    padding: 0px;
+    font-style: italic;
+    margin-left: 2px;
 }

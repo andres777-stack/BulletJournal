@@ -44,20 +44,48 @@ def yourGoals(request):
     
 
 def yourMonth(request, mes):
-    month = getOnlyWords(mes)
-    year = getOnlyInt(mes)
-    month_number = datetime.datetime.strptime(month[:3], '%b').month
-    daysInMonth= calendar.monthrange(year, month_number)[1]
-    if len(str(month_number)) == 1:
-        month_number = '0' + str(month_number)
+    if request.method == 'GET':
+        month = getOnlyWords(mes)
+        year = getOnlyInt(mes)
+        month_number = datetime.datetime.strptime(month[:3], '%b').month
+        daysInMonth= calendar.monthrange(year, month_number)[1]
+        #the date imput requiered this 
+        if len(str(month_number)) == 1:
+            month_number = '0' + str(month_number)
+        #Creating all days of the month
+        for i in range(1, daysInMonth + 1, 1):
+            if Day.objects.filter(mes=month, number=i).exists():
+                pass
+            else:
+                Day.objects.create(mes=month, number=i, numberInt=i)
+        days10 = Day.objects.filter(mes=month).order_by('numberInt')[:10]
+        days20 = Day.objects.filter(mes=month).order_by('numberInt')[10:20]
+        daysRest = Day.objects.filter(mes=month).order_by('numberInt')[20:]
+
+        context = {
+            'monthStr': month,
+            'monthInt': month_number,
+            'year': year,
+            'daysOfMonth': daysInMonth,
+            'days10': days10,
+            'days20': days20,
+            'daysRest': daysRest,
+        }
+        return render(request, 'YearMonthDay/month.html', context=context)
     
-    context = {
-        'monthStr': month,
-        'monthInt': month_number,
-        'year': year,
-        'daysOfMonth': daysInMonth,
-    }
-    return render(request, 'YearMonthDay/month.html', context=context)
+    if request.method == 'POST':
+        importantTask = request.POST.get('importantTask')
+        date = request.POST.get('day')
+        dateStr = date.replace('-', ' ')
+        dateList = dateStr.split()
+        objDate = datetime.datetime(int(dateList[0]), int(dateList[1]), int(dateList[2]))
+        #getting day number from objDate
+        day = int(objDate.strftime("%d"))
+        day = Day.objects.get(mes=mes, number=day)
+        day.important = importantTask
+        day.save()
+        return JsonResponse({'day': {'id': day.numberInt, 'important': day.important}})
+        
 
 def mesdia(request, mes, dia):
 
@@ -66,7 +94,7 @@ def mesdia(request, mes, dia):
         if Day.objects.filter(mes=mes, number=dia).exists():
             day = Day.objects.get(mes=mes, number=dia)
         else:
-            day = Day.objects.create(mes=mes, number=dia)
+            day = Day.objects.create(mes=mes, number=dia, numberInt=dia)
         
         form = TaskForm()
         allTaskDone = day.tasks.all().filter(done=True)
@@ -130,7 +158,7 @@ def migrate(request, model, id):
         if Day.objects.filter(mes=month, number=day).exists():
             instance = Day.objects.get(mes=month, number=day)
         else:
-            instance = Day.objects.create(mes=month, number=day)
+            instance = Day.objects.create(mes=month, number=day, numberInt=day)
         obj.day = instance
         obj.save()
         return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':monthUrl, 'dia': dayUrl}))

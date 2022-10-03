@@ -6,15 +6,81 @@
 {%block content%} 
 
 <div class="content-month">
-        <h3>Your Month</h3>
-        <form action="" method="post">
-            <label for="input">Write one important task or event for each day of the month</label>
-            <input type="text" id="input" name="importantTask">
-            <input type="date" id="date" name="date" 
-            min="{{year}}-{{monthInt}}-01" max="{{year}}-{{monthInt}}-{{daysOfMonth}}">
-        </form>
-</div>
+    <h3 id="month">{{monthStr}}</h3>
+    <h3 id="instruction">Write one important task or event for each day of the month</h3>
+    <form action="" method="post" id="form">
+        <input type="text" id="inputText" name="importantTask" autofocus>
+        <input type="date" id="date" name="day" 
+        min="{{year}}-{{monthInt}}-01" max="{{year}}-{{monthInt}}-{{daysOfMonth}}">
+        <button type="button" onclick="saveData()" id="button">Add</button>
+    </form>
+    <div class="content-list">
+        <ol id="list">
+            {% for day in days10 %} 
+            <li><p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p></li>
+            {% endfor %}
+        </ol>
+        <ol start="11" id="list2">
+            {% for day in days20 %} 
+            <li><p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p></li>
+            {% endfor %}
+        </ol>
+        <ol start="21" id="list3">
+            {% for day in daysRest %} 
+            <li><p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p></li>
+            {% endfor %}
+        </ol>
+    </div>
+</div> 
 
+<script>
 
+    function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+            }
+            return cookieValue;
+        }
+    
+    function saveData() {
+        let form = new FormData(document.getElementById('form'));
+        let month = document.getElementById('month');
+        let list = document.getElementById('list');
+        month = month.innerHTML;
+        fetch(
+                '/yourBulletJournal/yourYear/' + month + '/', {
+                    method: 'POST',
+                    body: form,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                }
+            ).then(function (response) {
+                return response.json();
+            }).then(function (data){
+                let day = data.day;
+                let important = day.important;
+                let id = day.id;
+                document.getElementById('important' + id).innerHTML = important;
+            })
+    }
 
+    items = document.getElementsByTagName('p');
+    for (let i = 0; i < items.length; i++){
+        if(items[i].innerHTML == " "){
+            items[i].setAttribute('style', 'padding: 4px')
+        }
+    }
+        
+</script>
 {%endblock%} 
