@@ -18,7 +18,7 @@ class Day(models.Model):
     #notes
 
     def __str__(self):
-        return self.mes + self.number
+        return self.mes + ' ' + self.number
 
 class Task(models.Model):
     to_do = models.CharField(max_length=100)
