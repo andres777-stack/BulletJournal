@@ -84,7 +84,7 @@ def yourMonth(request, mes):
         day = Day.objects.get(mes=mes, number=day)
         day.important = importantTask
         day.save()
-        return JsonResponse({'day': {'id': day.numberInt, 'important': day.important}})
+        return JsonResponse({'day': {'id': day.numberInt, 'important': day.important, 'month': day.mes}})
         
 
 def mesdia(request, mes, dia):
@@ -174,6 +174,25 @@ def delete(request, model, id):
     obj.delete()
     return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':monthUrl, 'dia': dayUrl}))
 
+
+def checkTask(request):
+    id = getOnlyInt(request.POST['obj-id'])
+    modelStr = getOnlyWords(request.POST['obj-id'])
+    Model = apps.get_model('YearMonthDay', modelStr)
+    obj = Model.objects.get(id=id)
+    obj.done = True
+    obj.save()
+    id = obj.id
+    return JsonResponse({'obj': id, 'model': modelStr})
+
+def deleteImportant(request, month, number):
+    day = Day.objects.get(mes=month, numberInt=number)
+    print('*'*90)
+    print(day)
+    day.important = None;
+    day.save()
+    return redirect(reverse('YearMonthDay:yourMonth', kwargs={'mes': day.mes + '2022'}))
+
 def getOnlyWords(value):
     valids = []
     for character in value:
@@ -187,14 +206,4 @@ def getOnlyInt(value):
         if not character.isalpha():
             valids.append(character)
     return int(''.join(valids))
-
-def checkTask(request):
-    id = getOnlyInt(request.POST['obj-id'])
-    modelStr = getOnlyWords(request.POST['obj-id'])
-    Model = apps.get_model('YearMonthDay', modelStr)
-    obj = Model.objects.get(id=id)
-    obj.done = True
-    obj.save()
-    id = obj.id
-    return JsonResponse({'obj': id, 'model': modelStr})
 # Create your views here.

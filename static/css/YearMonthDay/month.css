@@ -67,10 +67,20 @@ ol {
 
 li {
     border-bottom: 1px solid black;
+    max-width: 75%;
 }
 
 p {
     padding: 0px;
     font-style: italic;
     margin-left: 2px;
+    word-wrap: break-word;
+    max-width: 80%;
+    display: inline-block;
 }
+
+a {
+    float: right;
+
+}
+

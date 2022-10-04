@@ -17,23 +17,50 @@
     <div class="content-list">
         <ol id="list">
             {% for day in days10 %} 
-            <li><p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p></li>
+            <li id="li{{day.numberInt}}"> 
+                {% if day.important %}
+                <p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p>
+                <a href="{% url 'YearMonthDay:deleteImportant' number=day.numberInt month=day.mes %}">delete</a>
+                {%else%}
+                <p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p>
+                {%endif%}
+            </li>
             {% endfor %}
         </ol>
         <ol start="11" id="list2">
             {% for day in days20 %} 
-            <li><p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p></li>
+            <li id="li{{day.numberInt}}">
+                {%if day.important %}
+                <p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p>
+                <a href="{% url 'YearMonthDay:deleteImportant' number=day.numberInt month=day.mes%}">delete</a>
+                {%else%}
+                <p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p>
+                {%endif%}
+            </li>
             {% endfor %}
         </ol>
         <ol start="21" id="list3">
             {% for day in daysRest %} 
-            <li><p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p></li>
+            <li id="li{{day.numberInt}}">
+                {% if day.important %}
+                <p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p>
+                <a href="{% url 'YearMonthDay:deleteImportant' number=day.numberInt month=day.mes%}">delete</a>
+                {%else%}
+                <p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p>
+                {%endif%}
+            </li>
             {% endfor %}
         </ol>
     </div>
 </div> 
 
 <script>
+
+    function setAttributes(element, attrs) {
+        for(let key in attrs) {
+            element.setAttribute(key, attrs[key]);
+            }
+        }
 
     function getCookie(name) {
             let cookieValue = null;
@@ -71,7 +98,12 @@
                 let day = data.day;
                 let important = day.important;
                 let id = day.id;
+                let month = day.month;
                 document.getElementById('important' + id).innerHTML = important;
+                ancor = document.createElement('a');
+                ancor.href = '/yourBulletJournal/yourYear/deleteImportant/' + month + '/' + id + '/';
+                ancor.innerHTML = 'delete';
+                document.getElementById('li' + id).appendChild(ancor);
             })
     }
 
@@ -81,6 +113,7 @@
             items[i].setAttribute('style', 'padding: 4px')
         }
     }
+
         
 </script>
 {%endblock%} 

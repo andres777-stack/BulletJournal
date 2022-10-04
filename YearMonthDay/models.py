@@ -12,6 +12,7 @@ class Day(models.Model):
     number = models.CharField(max_length=20)
     numberInt = models.IntegerField(null=True, blank=True)
     important = models.CharField(max_length=100, null=True, blank=True)
+    importantIsDone = models.BooleanField(default=False, blank=True, null=True)
     #tasks
     #events
     #notes
