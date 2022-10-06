@@ -1,0 +1,27 @@
+{% extends 'base.html' %} 
+{% load crispy_forms_tags %}
+
+{% block title %} My Account {% endblock %} 
+
+{% block content %} 
+
+<h2 class="text-center">Joke Writer Application</h2> 
+
+<div class="card border-primary m-auto mb-3" style="max-width: 30rem">
+    <div class="card-header text-center">My account</div>
+    <div class="card_body">
+        {% if user.avatar and not form.avatar.errors %} 
+        <img src="{{user.avatar.url}}" alt="avatar" class="img-thumbnail mx-auto d-block"/>
+        {%endif %}
+        <form method="post" class="m-auto" novalidate enctype="multipart/form-data">
+            {% csrf_token %}
+            {{form|crispy}} 
+            <button class="form-control btn btn-primary">UPDATE</button>
+        </form>
+    </div>
+    <div class="card-footer text-center">
+        <p><a href="{% url 'account_change_password' %}">Change Password</a></p>
+    </div>
+</div>
+
+{% endblock %}

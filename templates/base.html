@@ -17,16 +17,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>{% block title %}{% endblock %}</title>
 </head>
-<body style="padding-top: 30px;">
+<body style="padding-top: 100px;">
     <nav class="navbar fixed-top navbar-dark bg-primary">
         <a class="navbar-brand" style="margin-left:20px;" href="{% url 'YearMonthDay:index' %}">Bullet Journal</a>
         <div class="content-nav" style="margin: 0 auto;">
+        {% if user.is_authenticated %}    
         <a class="navbar-brand" href="{% url 'YearMonthDay:yourYear' %}">My Year</a>
         <a class="navbar-brand" href="{% url 'YearMonthDay:yourGoals' %}">My Goals</a>
-        <a class="navbar-brand" href="#">My Projects</a>
+        <a class="navbar-brand" href="{% url 'my-account' %}">My Account</a>
+        {%endif%}
         </div>
         <div class="login-nav" style="float:right; margin-right:40px;">
-            <a class="navbar-brand" href="#">Login</a>
+            {% if user.is_authenticated %}
+            <form action="{% url 'account_logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" 
+                style="border:none; background-color:rgb(13,110,253); color:white; font-size: large;">Log out</button>
+            </form>
+            {% else %} 
+            <a class="navbar-brand" href="{% url 'account_login' %}">Login</a>
+            <a class="navbar-brand" href="{% url 'account_signup' %}">Sign up</a>
+            {%endif %}
         </div>
     </nav>
     {% block content %}

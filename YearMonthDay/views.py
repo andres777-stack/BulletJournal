@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.http import JsonResponse
 from django.apps import apps
+from django.contrib.auth import get_user_model
 from YearMonthDay.models import * 
 from YearMonthDay.forms import *
 import datetime
@@ -8,22 +9,33 @@ import calendar
 
 def index(request):
     if request.method == 'GET':
-        return render(request, 'YearMonthDay/starting.html', context={'form': startingForm})
+        return render(request, 'YearMonthDay/starting.html')
     if request.method == 'POST':
-        print(request.POST)
-        for key, value in request.POST.items():
-            if 'goal' in key:
-                Goal.objects.create(goal=value)
-        return redirect(reverse('YearMonthDay:yourYear'))
+        date = datetime.datetime.now().date()
+        year = date.strftime("%Y")
+        user = request.user
+        usermodel = get_user_model()
+        userObj = usermodel.objects.get(id=user.id)
+
+        if userObj.years.filter(year=int(year)).exists():
+            for key, value in request.POST.items():
+                if 'goal' in key:
+                    goal = Goal(goal=value, year=int(year), user=userObj)
+                    goal.save()
+            return redirect(reverse('YearMonthDay:yourYear'))
+        else:
+            Year.objects.create(year=int(year), user = userObj)
+            for key, value in request.POST.items():
+                if 'goal' in key:
+                    Goal.objects.create(goal=value, year=int(year), user=userObj)
+            return redirect(reverse('YearMonthDay:yourYear'))
 
 def yourYear(request):
     if request.method == 'GET':
-        goals = Goal.objects.all().order_by('-id')[:3]
+        #goals = Goal.objects.filter(user__id=user.id).order_by('-id')[:3]
         date = datetime.datetime.now().date()
         year = date.strftime("%Y")
         month = date.strftime("%m")
-        print(month)
-
         #creating each month
 
         myarr = []
@@ -32,18 +44,19 @@ def yourYear(request):
             mc = mc.formatmonth(int(year), int(i))
             monthName = calendar.month_name[i]
             myarr.append({'mc': mc, 'monthName': monthName})
-        return render(request, 'YearMonthDay/year.html', context={'goals': goals, 'months': myarr})
+        return render(request, 'YearMonthDay/year.html', context={'months': myarr})
 
 def yourGoals(request):
-
+    user = request.user
     context = {
-        'goals': Goal.objects.all().order_by('-id')[:3]
+        'goals': Goal.objects.filter(user__id=user.id).order_by('-id')
         }
 
     return render(request, 'YearMonthDay/yourGoals.html', context=context)
     
 
 def yourMonth(request, mes):
+    
     if request.method == 'GET':
         month = getOnlyWords(mes)
         year = getOnlyInt(mes)
@@ -53,14 +66,16 @@ def yourMonth(request, mes):
         if len(str(month_number)) == 1:
             month_number = '0' + str(month_number)
         #Creating all days of the month
+        user = request.user
+        yearObj = Year.objects.get(year=int(year), user__id=user.id)
         for i in range(1, daysInMonth + 1, 1):
-            if Day.objects.filter(mes=month, number=i).exists():
+            if Day.objects.filter(year=yearObj, mes=month, number=i).exists():
                 pass
             else:
-                Day.objects.create(mes=month, number=i, numberInt=i)
-        days10 = Day.objects.filter(mes=month).order_by('numberInt')[:10]
-        days20 = Day.objects.filter(mes=month).order_by('numberInt')[10:20]
-        daysRest = Day.objects.filter(mes=month).order_by('numberInt')[20:]
+                Day.objects.create(year=yearObj, mes=month, number=i, numberInt=i)
+        days10 = Day.objects.filter(year=yearObj, mes=month).order_by('numberInt')[:10]
+        days20 = Day.objects.filter(year=yearObj, mes=month).order_by('numberInt')[10:20]
+        daysRest = Day.objects.filter(year=yearObj, mes=month).order_by('numberInt')[20:]
 
         context = {
             'monthStr': month,
@@ -79,9 +94,14 @@ def yourMonth(request, mes):
         dateStr = date.replace('-', ' ')
         dateList = dateStr.split()
         objDate = datetime.datetime(int(dateList[0]), int(dateList[1]), int(dateList[2]))
+        #getting obj year
+        date = datetime.datetime.now().date()
+        year = date.strftime("%Y")
+        user = request.user
+        yearObj = Year.objects.get(year=int(year), user__id=user.id)
         #getting day number from objDate
         day = int(objDate.strftime("%d"))
-        day = Day.objects.get(mes=mes, number=day)
+        day = Day.objects.get(year=yearObj, mes=mes, number=day)
         day.important = importantTask
         day.save()
         return JsonResponse({'day': {'id': day.numberInt, 'important': day.important, 'month': day.mes}})
@@ -90,26 +110,28 @@ def yourMonth(request, mes):
 def mesdia(request, mes, dia):
 
     if request.method == 'GET':
-
-        if Day.objects.filter(mes=mes, number=dia).exists():
-            day = Day.objects.get(mes=mes, number=dia)
+        date = datetime.datetime.now().date()
+        year = date.strftime("%Y")
+        user = request.user
+        yearObj = Year.objects.get(year=int(year), user__id=user.id)
+        if Day.objects.filter(year=yearObj, mes=mes, number=dia).exists():
+            day = Day.objects.get(year=yearObj, mes=mes, number=dia)
         else:
             day = Day.objects.create(mes=mes, number=dia, numberInt=dia)
-        
-        form = TaskForm()
-        allTaskDone = day.tasks.all().filter(done=True)
-        print(allTaskDone)
 
         context = {
             'dia': day,
-            'form': form,
         }
 
         return render(request, 'YearMonthDay/day.html', context=context)
 
     if request.method == 'POST':
         if request.headers['x-requested-with'] == 'XMLHttpRequest':
-            instanceDay = Day.objects.get(mes=mes, number=dia)
+            date = datetime.datetime.now().date()
+            year = date.strftime("%Y")
+            user = request.user
+            yearObj = Year.objects.get(year=int(year), user__id=user.id)
+            instanceDay = Day.objects.get(year=yearObj, mes=mes, number=dia)
             if request.POST.get('to_do', False):
                 task = request.POST['to_do']
                 Task.objects.create(to_do=task, day=instanceDay)
@@ -120,7 +142,7 @@ def mesdia(request, mes, dia):
                 data = list(instanceDay.events.all().values())
             if request.POST.get('note', False):
                 note = request.POST['note']
-                newNote = Note.objects.create(text=note, day=instanceDay)
+                Note.objects.create(text=note, day=instanceDay)
                 data = list(instanceDay.notes.all().values())
             return JsonResponse({'objects': data})
 
@@ -155,16 +177,20 @@ def migrate(request, model, id):
         month = objDate.strftime("%B") 
         day = int(objDate.strftime("%d"))
         #changing the task foreign key
-        if Day.objects.filter(mes=month, number=day).exists():
-            instance = Day.objects.get(mes=month, number=day)
+        date = datetime.datetime.now().date()
+        year = date.strftime("%Y")
+        user = request.user
+        yearObj = Year.objects.get(year=int(year), user__id=user.id)
+        if Day.objects.filter(year=yearObj, mes=month, number=day).exists():
+            instance = Day.objects.get(year=yearObj, mes=month, number=day)
         else:
-            instance = Day.objects.create(mes=month, number=day, numberInt=day)
+            instance = Day.objects.create(year=yearObj, mes=month, number=day, numberInt=day)
         obj.day = instance
         obj.save()
         return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':monthUrl, 'dia': dayUrl}))
         
 def delete(request, model, id):
-    #obj represent a task object, event object or note object.
+    #obj represent a task object, event object or note.
     Model = apps.get_model('YearMonthDay', model)
     obj = Model.objects.get(id=id)
     previusDay = obj.day
@@ -186,9 +212,11 @@ def checkTask(request):
     return JsonResponse({'obj': id, 'model': modelStr})
 
 def deleteImportant(request, month, number):
-    day = Day.objects.get(mes=month, numberInt=number)
-    print('*'*90)
-    print(day)
+    date = datetime.datetime.now().date()
+    year = date.strftime("%Y")
+    user = request.user
+    yearObj = Year.objects.get(year=int(year), user__id=user.id)
+    day = Day.objects.get(year=yearObj, mes=month, numberInt=number)
     day.important = None;
     day.save()
     return redirect(reverse('YearMonthDay:yourMonth', kwargs={'mes': day.mes + '2022'}))

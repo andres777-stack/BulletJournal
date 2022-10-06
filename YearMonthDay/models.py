@@ -1,13 +1,25 @@
 from django.db import models
+from django.conf import settings
 
 class Goal(models.Model):
     goal = models.CharField(max_length=100)
+    year = models.IntegerField(null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='goals', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.goal
-    
+
+class Year(models.Model):
+    year = models.IntegerField(null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='years', on_delete=models.CASCADE, null=True, blank=True)
+    #days
+
+    def __str__(self):
+        return str(self.year)
 
 class Day(models.Model):
+    #The days will be different depending its foreignKey
+    year = models.ForeignKey(Year, related_name='days', on_delete=models.CASCADE, null=True, blank=True)
     mes = models.CharField(max_length=20, null=True)
     number = models.CharField(max_length=20)
     numberInt = models.IntegerField(null=True, blank=True)
