@@ -7,9 +7,9 @@ from YearMonthDay.forms import *
 import datetime
 import calendar
 
-def index(request):
+def yourGoals(request):
     if request.method == 'GET':
-        return render(request, 'YearMonthDay/starting.html')
+        return render(request, 'YearMonthDay/yourGoals.html')
     if request.method == 'POST':
         date = datetime.datetime.now().date()
         year = date.strftime("%Y")
@@ -19,8 +19,11 @@ def index(request):
 
         if userObj.years.filter(year=int(year)).exists():
             for key, value in request.POST.items():
-                if 'goal' in key:
+                #filter only the goals that does not exist yet in the user 
+                if not userObj.goals.filter(goal=value).exists() and 'goal' in key :
                     goal = Goal(goal=value, year=int(year), user=userObj)
+                    print('*'*90)
+                    print(goal)
                     goal.save()
             return redirect(reverse('YearMonthDay:yourYear'))
         else:
@@ -44,16 +47,8 @@ def yourYear(request):
             mc = mc.formatmonth(int(year), int(i))
             monthName = calendar.month_name[i]
             myarr.append({'mc': mc, 'monthName': monthName})
-        return render(request, 'YearMonthDay/year.html', context={'months': myarr})
+        return render(request, 'YearMonthDay/year.html', context={'months': myarr, 'year': year})
 
-def yourGoals(request):
-    user = request.user
-    context = {
-        'goals': Goal.objects.filter(user__id=user.id).order_by('-id')
-        }
-
-    return render(request, 'YearMonthDay/yourGoals.html', context=context)
-    
 
 def yourMonth(request, mes):
     
@@ -151,9 +146,23 @@ def migrate(request, model, id):
     if request.method == 'GET':
 
         Model = apps.get_model('YearMonthDay', model)
+        obj = Model.objects.get(id=id)
+        month = obj.day.mes
+        month_number = datetime.datetime.strptime(month[:3], '%b').month
+        date = datetime.datetime.now().date()
+        year = date.strftime("%Y")
+        daysInMonth= calendar.monthrange(int(year), month_number)[1]
+        #the date imput requiered this 
+        if len(str(month_number)) == 1:
+            month_number = '0' + str(month_number)
+        print(month_number)
+        print(daysInMonth)
 
         context = {
-            'obj': Model.objects.get(id=id), 
+            'obj': Model.objects.get(id=id),
+            'year': year,
+            'monthNum': month_number,
+            'daysInMonth': daysInMonth,
             }
 
         return render(request, 'YearMonthDay/migrate.html', context=context)

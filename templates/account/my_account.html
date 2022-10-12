@@ -1,12 +1,12 @@
 {% extends 'base.html' %} 
 {% load crispy_forms_tags %}
+{% load static %} 
+{% block styles %} <link rel="stylesheet" href="{% static 'css/account/my_account.css' %}"> {% endblock %}
 
 {% block title %} My Account {% endblock %} 
 
 {% block content %} 
-
-<h2 class="text-center">Joke Writer Application</h2> 
-
+<div class="container">
 <div class="card border-primary m-auto mb-3" style="max-width: 30rem">
     <div class="card-header text-center">My account</div>
     <div class="card_body">
@@ -22,6 +22,7 @@
     <div class="card-footer text-center">
         <p><a href="{% url 'account_change_password' %}">Change Password</a></p>
     </div>
+</div>
 </div>
 
 {% endblock %}

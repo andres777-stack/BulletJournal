@@ -1,12 +1,69 @@
-.container{
-    padding-top: 100px;
+.content-start {
+    text-align: center;
+    padding-top: 75px;
 }
 
-.list{
-    list-style: none;
-}
-
-ul li{
+.text-center {
     font-size: 20px;
+    font-weight: bold;
+    color: rgb(33, 33, 112);
     font-style: italic;
 }
+#buttonAdd{
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    border-radius: 3px;
+    font-weight: bold;
+    transition: opacity 0.15s;
+}
+
+#buttonAdd:hover{
+    opacity: 0.7;
+}
+
+#buttonAdd:active{
+    opacity: 0.5;
+}
+
+.list-goals{
+    margin-top: 40px;
+    text-align: center;
+    max-width: 50%;
+}
+
+label{
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#input{
+    width: 60%;
+    margin-top: 10px;
+}
+
+#button{
+    margin-top: 20px;
+    font-size: 25px;
+}
+
+#list {
+    width: 50%;
+    margin: 0 auto;
+    margin-top: 20px;
+    
+}
+
+li {
+    font-size: 20px;
+    font-style: italic;
+    display:flex;
+    justify-content: space-between;
+}
+
+.paragraph_li{
+    max-width: 70%;
+}
+
+

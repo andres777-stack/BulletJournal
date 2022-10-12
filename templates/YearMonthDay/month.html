@@ -11,7 +11,7 @@
     <form action="" method="post" id="form">
         <input type="text" id="inputText" name="importantTask" autofocus>
         <input type="date" id="date" name="day" 
-        min="{{year}}-{{monthInt}}-01" max="{{year}}-{{monthInt}}-{{daysOfMonth}}">
+        min="{{year}}-{{monthInt}}-01" max="{{year}}-{{monthInt}}-{{daysOfMonth}}" required>
         <button type="button" onclick="saveData()" id="button">Add</button>
     </form>
     <div class="content-list">
@@ -20,7 +20,8 @@
             <li id="li{{day.numberInt}}"> 
                 {% if day.important %}
                 <p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p>
-                <a href="{% url 'YearMonthDay:deleteImportant' number=day.numberInt month=day.mes %}">delete</a>
+                <a href="{% url 'YearMonthDay:deleteImportant' number=day.numberInt month=day.mes %}" class="ancor">
+                    <i class="fa fa-trash-o" aria-hidden="true" id="{{day.numberInt}}"></i></a>
                 {%else%}
                 <p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p>
                 {%endif%}
@@ -32,7 +33,8 @@
             <li id="li{{day.numberInt}}">
                 {%if day.important %}
                 <p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p>
-                <a href="{% url 'YearMonthDay:deleteImportant' number=day.numberInt month=day.mes%}">delete</a>
+                <a href="{% url 'YearMonthDay:deleteImportant' number=day.numberInt month=day.mes%}" class="ancor">
+                    <i class="fa fa-trash-o" aria-hidden="true" id="{{day.numberInt}}"></i></a>
                 {%else%}
                 <p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p>
                 {%endif%}
@@ -44,7 +46,8 @@
             <li id="li{{day.numberInt}}">
                 {% if day.important %}
                 <p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p>
-                <a href="{% url 'YearMonthDay:deleteImportant' number=day.numberInt month=day.mes%}">delete</a>
+                <a href="{% url 'YearMonthDay:deleteImportant' number=day.numberInt month=day.mes%}" class="ancor">
+                    <i class="fa fa-trash-o" aria-hidden="true" id="{{day.numberInt}}"></i></a>
                 {%else%}
                 <p id="important{{day.numberInt}}" style="display: inline-block">{{day.important|default_if_none:" " }}</p>
                 {%endif%}
@@ -101,9 +104,16 @@
                 let month = day.month;
                 document.getElementById('important' + id).innerHTML = important;
                 ancor = document.createElement('a');
+                ancor.setAttribute('class', 'ancor');
                 ancor.href = '/yourBulletJournal/yourYear/deleteImportant/' + month + '/' + id + '/';
-                ancor.innerHTML = 'delete';
-                document.getElementById('li' + id).appendChild(ancor);
+                icon = document.createElement('i');
+                icon.setAttribute('class', 'fa fa-trash-o')
+                icon.setAttribute('aria-hidden', 'true');
+                icon.setAttribute('id', id);
+                ancor.appendChild(icon);
+                if (document.getElementById(id) == null) {
+                    document.getElementById('li' + id).appendChild(ancor);
+                }
             })
     }
 
@@ -113,6 +123,26 @@
             items[i].setAttribute('style', 'padding: 4px')
         }
     }
+
+    var input = document.getElementById("inputText");
+    // Execute a function when the user presses a key on the keyboard
+    input.addEventListener("keypress", function(event) {
+    // If the user presses the "Enter" key on the keyboard
+    if (event.key === "Enter") {
+        // Cancel the default action, if needed
+        event.preventDefault();
+        // Trigger the button element with a click
+        date = document.getElementById('date').value;
+        if (date) {
+            document.getElementById("button").click();
+            input.value = "";
+        } else {
+            alert("Please enter a date");
+        }
+        //
+        
+    }
+});
 
         
 </script>

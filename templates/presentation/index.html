@@ -1,19 +1,40 @@
 {% extends "base.html"%}
-{%load static%}
+{% load static %} 
+{% block styles %} <link rel="stylesheet" href="{% static 'css/presentation/index.css' %}"> {% endblock %}
 {% block title %} Bullet Journal{% endblock %}
 
 {% block content %} 
-<h1>Bullet Journal</h1>
-
-    <h3>What is a Bullet Journal?</h3>
-    <p>A bullet journal (sometimes known as a BuJo) is a method of personal organization developed by designer Ryder Carroll. 
-        The system organizes scheduling, reminders, to-do lists, brainstorming, and other organizational tasks into a single notebook. 
-        The name "bullet journal" comes from the use of abbreviated bullet points to log information, but it also partially comes from the 
-        use of dot journals, which are gridded using dots rather than lines First shared with the public in 2013, it has become a popular
-        organization method, garnering significant attention on Kickstarter, Instagram, Facebook, YouTube, and Pinterest.</p>
-    <h3>How to get started?</h3>
-    First, write down your goals.
-    <p><b>Simbología</b></p>
-    <h3 href="#">About us</h3>
+<div class="container">
+    <div class="card border-primary m-auto mb-3" style="max-width: 30rem">
+        <div class="card-header text-center title"><h3>Wellcome to <i>BulletJournal.com</i></h3></div>
+        <div class="card_body">
+            <p id="cuestion"><b>What is a Bullet Journal?</b></p>
+            <p>A bullet journal (sometimes known as a BuJo) is a method of personal organization developed by designer Ryder Carroll. 
+            The system organizes scheduling, reminders, to-do lists, brainstorming, and other organizational tasks into a single notebook.</p>
+            <p id="symbology"><b>Symbology</b></p>
+            <div class="simbols">
+                <div class="grid">
+                    <div><i class="fa fa-circle" aria-hidden="true"></i></div><div>Task</div>
+                    <div><i class="fa fa-times" aria-hidden="true"></i></div><div>Task Done</div>
+                    <div><i class="fa fa-caret-up" aria-hidden="true"></i></div><div>Event</div>
+                    <p id="eventDone">Event</p><div>Event Done</div>
+                </div>
+                <div class="grid">
+                    <div><i class="fa fa-minus" aria-hidden="true"></i></div><div>Note</div>
+                    <div><i class="fa fa-share" aria-hidden="true"></i></div><div>Migrate Task, Event or Note</div>
+                    <div><i class="fa fa-check" aria-hidden="true"></i></div><div>Mark a Task or Event as Done</div>
+                </div>
+            </div>
+            <div class="card-text">
+                {% if user.is_authenticated %}
+                <a href="{% url 'YearMonthDay:yourYear' %}" class="btn btn-primary">Get Back!</a>
+                {%else%}
+                <a href="{% url 'account_signup' %}" class="btn btn-primary">Get Start!</a>
+                {% endif %}
+            </div>
+            
+        </div>
+    </div>  
+</div>
 
 {% endblock %}

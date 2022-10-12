@@ -1,19 +1,119 @@
-{% extends 'base.html' %}
+{% extends 'base.html'%} 
 {% load static %} 
 {% block styles %} <link rel="stylesheet" href="{% static 'css/YearMonthDay/yourGoals.css' %}"> {% endblock %}
-{% block title %} Your Goals {% endblock %} 
+{% block title %}Starting Your BulletJournal{%endblock%}
 
-{% block content %} 
-
-<div class="container">
-    <h3>Your goals:</h3>
-    <ul class="list">
-        {% for goal in goals %}
-        <li>{{goal}}</li>
-        {% empty %}
-        <li>There is no goals yet.</li>
-        {% endfor %}
-    </ul>
+{%block content%} 
+<div class="content-start">
+        <div class="card border-primary m-auto mb-3 list-goals">
+            {% if user.goals.all  %}
+            <div class="card-header text-center">Here you can add new goals or modify the existings ones:</div>
+            {%else%}
+            <div class="card-header text-center">Write your goals for this year:</div>
+            {% endif %}
+            <div class="card-body">
+            <input type="text" id="input" required autofocus><button id="buttonAdd" onclick="addGoal()">Add goal</button>
+            <ol id="list">
+                {% for goal in user.goals.all %} 
+                <li>
+                    <p class="paragraph_li">{{goal|capfirst}}</p>
+                    <div id="container-action">
+                        <a href="#"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                        <a href="#"><i class="fa fa-pencil-square" aria-hidden="true"></i></a>
+                    </div>
+                </li> 
+                {% endfor %}
+            </ol>
+        </div>
+        <form action="" method="post" id="form">
+            {% csrf_token %} 
+        </form>
+        <button type="button" class="btn btn-success" id="button" onclick="addInput()">
+            {% if user.goals.all %}
+            Save!
+            {% else %}
+            Get Start!
+            {% endif %}
+        </button>
+    </div>
 </div>
 
-{% endblock %} 
+<script>
+    function addGoal(){
+        let inputElement = document.getElementById("input").value;
+        let listElement = document.createElement("li");
+        setAttributes(listElement, {"style": 'font-size:20px; font-style:italic; display:flex; justify-content:space-between;'})
+        let p = document.createElement("p");
+        setAttributes(p, {"style": 'max-width:70%', 'class': 'paragraph_li'})
+        p.innerHTML = capitalizeFirstLetter(inputElement);
+        listElement.appendChild(p);
+        divElement = document.createElement("div");
+        let a = document.createElement("a");
+        setAttributes(a, {'href':'#'})
+        iconElement = document.createElement("i");
+        setAttributes(iconElement, {'class': 'fa fa-trash-o', 'aria-hidden': 'true'});
+        //<i class="fa fa-pencil-square" aria-hidden="true">
+        a.appendChild(iconElement);
+        divElement.appendChild(a);
+        let ancor = document.createElement("a");
+        setAttributes(ancor, {'href':'#', 'style': 'margin-left: 6px'})
+        iconElement = document.createElement("i");
+        setAttributes(iconElement, {'class': 'fa fa-pencil-square', 'aria-hidden': 'true'});
+        //<i class="fa fa-pencil-square" aria-hidden="true">
+        ancor.appendChild(iconElement);
+        divElement.appendChild(ancor);
+        listElement.appendChild(divElement);
+        lista = document.getElementById("list");
+        lista.insertBefore(listElement, lista.firstChild);
+        //document.getElementById("list").appendChild(listElement);
+        //lista.insertBefore(li, lista.firstChild);
+        document.getElementById("input").value = "";
+    }
+
+    function addInput() {
+        let goals = document.getElementsByClassName('paragraph_li');
+        if(goals.length == 0) {
+            alert("Please select a goal");
+        } else {
+            for(let i=0; i < goals.length; i++) {
+            let newInput = document.createElement("input");
+            setAttributes(newInput, {'type': 'hidden', 'name':'goal' + i, 'value': goals[i].innerHTML});
+            let form = document.getElementById("form");
+            form.appendChild(newInput);
+        }
+        let form = document.getElementById("form");
+        form.submit();
+        }
+        
+
+    }
+
+    function setAttributes(element, attrs) {
+        for(let key in attrs) {
+            element.setAttribute(key, attrs[key]);
+            }
+        }
+    
+        var input = document.getElementById("input");
+
+    // Execute a function when the user presses a key on the keyboard
+    input.addEventListener("keypress", function(event) {
+    // If the user presses the "Enter" key on the keyboard
+    if (event.key === "Enter") {
+        // Cancel the default action, if needed
+        event.preventDefault();
+        // Trigger the button element with a click
+        document.getElementById("buttonAdd").click();
+        input.value = "";
+    }
+});
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+
+</script>
+
+
+{%endblock%} 

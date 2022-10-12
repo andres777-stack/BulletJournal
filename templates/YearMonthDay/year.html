@@ -1,9 +1,13 @@
 {%extends 'base.html'%} 
+{% load static %} 
+{% block styles %} <link rel="stylesheet" href="{% static 'css/YearMonthDay/year.css' %}"> {% endblock %}
 
 {% block title %} Your Year{% endblock %}
 
 {% block content%}
-<div class="container" style="width: 700px; margin-top: 50px;">
+<div class="container">
+    <h3>{{year}}</h3>
+    <p>(Click on the month name and the number of the days)</p>
     <div class="row">
         {% autoescape off %}
         {%for mes in months%}
@@ -57,6 +61,12 @@
         months[i].appendChild(ancor);
     }
 
+    let ancors = document.getElementsByTagName('a');
+    for (let i = 0; i < ancors.length; i++){
+        if(ancors[i].innerHTML.includes('2022')){
+            ancors[i].innerHTML = ancors[i].innerHTML.replace(/[0-9]/g, '');
+        }
+    }
 </script>
 {% endblock %}
 

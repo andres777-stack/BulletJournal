@@ -1,0 +1,12 @@
+.container {
+    padding-top: 100px;
+}
+
+form {
+    display:flex;
+    justify-content:center;
+}
+
+button {
+    margin-left: 5px;
+}

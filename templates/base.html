@@ -17,9 +17,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>{% block title %}{% endblock %}</title>
 </head>
-<body style="padding-top: 100px;">
+<body style="padding-top: 50px;">
     <nav class="navbar fixed-top navbar-dark bg-primary">
-        <a class="navbar-brand" style="margin-left:20px;" href="{% url 'YearMonthDay:index' %}">Bullet Journal</a>
+        <a class="navbar-brand" style="margin-left:20px;" href="{% url 'presentation:greetings' %}">Bullet Journal</a>
         <div class="content-nav" style="margin: 0 auto;">
         {% if user.is_authenticated %}    
         <a class="navbar-brand" href="{% url 'YearMonthDay:yourYear' %}">My Year</a>

@@ -5,7 +5,6 @@ from YearMonthDay import views
 app_name = 'YearMonthDay'
 
 urlpatterns = [
-    path('', views.index, name = 'index'),
     path('yourYear/', views.yourYear, name = 'yourYear'),
     path('yourGoals/', views.yourGoals, name = 'yourGoals'),
     path('yourYear/checkTask/', views.checkTask, name = 'checkTask'),

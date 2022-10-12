@@ -3,7 +3,7 @@
 }
 
 #month {
-    color: red;
+    color: rgb(49, 49, 143);
     width: 100px;
     margin-left: auto;
     margin-right: auto;
@@ -74,12 +74,13 @@ p {
     padding: 0px;
     font-style: italic;
     margin-left: 2px;
+    margin-bottom: 0;
     word-wrap: break-word;
-    max-width: 80%;
+    max-width: 85%;
     display: inline-block;
 }
 
-a {
+.ancor {
     float: right;
 
 }

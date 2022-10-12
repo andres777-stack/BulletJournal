@@ -1,0 +1,53 @@
+.container {
+    margin-top: 20px;
+}
+
+.card {
+    padding: 20px;
+}
+
+.title{
+    font-size: 20px;
+    font-weight: bold;
+    font-style: italic;
+    color: rgb(22, 22, 73);
+}
+
+p {
+    text-align: center;
+}
+
+#symbology{
+    margin-top: -10px;
+}
+
+.simbols{
+    display: flex;
+}
+
+#cuestion{
+    margin-top: 5px;
+}
+
+#eventDone{
+    text-decoration: line-through;
+    margin-bottom: 0;
+    margin-left: -12px;
+}
+.grid {
+    display: grid;
+    grid-template-columns: 50px auto;
+    margin-left: 20px;
+}
+
+i {
+    display: block;
+}
+
+.card-text{
+    display:flex;
+    justify-content: center;
+}
+button{
+    margin-top: 10px;
+}
