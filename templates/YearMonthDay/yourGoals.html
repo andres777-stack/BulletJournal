@@ -7,68 +7,104 @@
 <div class="content-start">
         <div class="card border-primary m-auto mb-3 list-goals">
             {% if user.goals.all  %}
-            <div class="card-header text-center">Here you can add new goals or modify the existings ones:</div>
+            <div class="card-header text-center">Here you can add new goals, modify the existings ones or delete them.</div>
             {%else%}
             <div class="card-header text-center">Write your goals for this year:</div>
             {% endif %}
             <div class="card-body">
-            <input type="text" id="input" required autofocus><button id="buttonAdd" onclick="addGoal()">Add goal</button>
+                <form action="" method="post" id="form">
+                    {% csrf_token %}
+                    {{form}}
+                </form>
+                <button type="button" id="buttonAdd" onclick="saveData()">Add goal</button>
             <ol id="list">
                 {% for goal in user.goals.all %} 
                 <li>
                     <p class="paragraph_li">{{goal|capfirst}}</p>
                     <div id="container-action">
                         <a href="{% url 'YearMonthDay:deleteGoal' id=goal.id %}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                        <a href="#"><i class="fa fa-pencil-square" aria-hidden="true"></i></a>
+                        <a href="{% url 'YearMonthDay:updateGoal' id=goal.id %}"><i class="fa fa-pencil-square" aria-hidden="true"></i></a>
                     </div>
                 </li> 
                 {% endfor %}
             </ol>
         </div>
-        <form action="" method="post" id="form">
-            {% csrf_token %} 
-        </form>
-        <button type="button" class="btn btn-success" id="button" onclick="addInput()">
+        <a href="{% url 'YearMonthDay:yourYear' %}" class="btn btn-success" id="ancor">
             {% if user.goals.all %}
             Save!
             {% else %}
             Get Start!
             {% endif %}
-        </button>
+        </a>
     </div>
 </div>
 
 <script>
-    function addGoal(){
-        let inputElement = document.getElementById("input").value;
-        let listElement = document.createElement("li");
-        setAttributes(listElement, {"style": 'font-size:20px; font-style:italic; display:flex; justify-content:space-between;'})
-        let p = document.createElement("p");
-        setAttributes(p, {"style": 'max-width:70%', 'class': 'paragraph_li'})
-        p.innerHTML = capitalizeFirstLetter(inputElement);
-        listElement.appendChild(p);
-        divElement = document.createElement("div");
-        let a = document.createElement("a");
-        setAttributes(a, {'href':'#'})
-        iconElement = document.createElement("i");
-        setAttributes(iconElement, {'class': 'fa fa-trash-o', 'aria-hidden': 'true'});
-        //<i class="fa fa-pencil-square" aria-hidden="true">
-        a.appendChild(iconElement);
-        divElement.appendChild(a);
-        let ancor = document.createElement("a");
-        setAttributes(ancor, {'href':'#', 'style': 'margin-left: 6px'})
-        iconElement = document.createElement("i");
-        setAttributes(iconElement, {'class': 'fa fa-pencil-square', 'aria-hidden': 'true'});
-        //<i class="fa fa-pencil-square" aria-hidden="true">
-        ancor.appendChild(iconElement);
-        divElement.appendChild(ancor);
-        listElement.appendChild(divElement);
-        lista = document.getElementById("list");
-        lista.insertBefore(listElement, lista.firstChild);
-        //document.getElementById("list").appendChild(listElement);
-        //lista.insertBefore(li, lista.firstChild);
-        document.getElementById("input").value = "";
-    }
+
+    function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+            }
+            return cookieValue;
+        }
+    
+    function saveData() {
+        let value = document.getElementById('id_goal').value;
+        if(!value) {
+            return alert ('Add a goal please');
+        }
+        let form = new FormData(document.getElementById('form'));
+        let lista = document.getElementById('list');
+        fetch(
+            '/yourBulletJournal/yourGoals/', {
+                method: 'POST',
+                body: form,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            }
+            ).then(function (response) {
+                return response.json();
+            }).then(function (data){
+                let goal = data.goal;
+                let inputElement = goal.goal;
+                let listElement = document.createElement("li");
+                setAttributes(listElement, {"style": 'font-size:20px; font-style:italic; display:flex; justify-content:space-between;'})
+                let p = document.createElement("p");
+                setAttributes(p, {"style": 'max-width:85%', 'class': 'paragraph_li'})
+                p.innerHTML = capitalizeFirstLetter(inputElement);
+                listElement.appendChild(p);
+                divElement = document.createElement("div");
+                let a = document.createElement("a");
+                setAttributes(a, {'href': '/yourBulletJournal/yourGoals/delete/' + goal.id})
+                iconElement = document.createElement("i");
+                setAttributes(iconElement, {'class': 'fa fa-trash-o', 'aria-hidden': 'true'});
+                //<i class="fa fa-pencil-square" aria-hidden="true">
+                a.appendChild(iconElement);
+                divElement.appendChild(a);
+                let ancor = document.createElement("a");
+                setAttributes(ancor, {'href':'/yourBulletJournal/yourGoals/update/' + goal.id, 'style': 'margin-left: 6px'})
+                iconElement = document.createElement("i");
+                setAttributes(iconElement, {'class': 'fa fa-pencil-square', 'aria-hidden': 'true'});
+                //<i class="fa fa-pencil-square" aria-hidden="true">
+                ancor.appendChild(iconElement);
+                divElement.appendChild(ancor);
+                listElement.appendChild(divElement);
+                lista.insertBefore(listElement, lista.firstChild);
+            })
+                
+        }
+
 
     function addInput() {
         let goals = document.getElementsByClassName('paragraph_li');
@@ -84,8 +120,6 @@
         let form = document.getElementById("form");
         form.submit();
         }
-        
-
     }
 
     function setAttributes(element, attrs) {
@@ -94,8 +128,8 @@
             }
         }
     
-        var input = document.getElementById("input");
-
+        
+    var input = document.getElementById("id_goal");
     // Execute a function when the user presses a key on the keyboard
     input.addEventListener("keypress", function(event) {
     // If the user presses the "Enter" key on the keyboard
@@ -108,12 +142,11 @@
     }
 });
 
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
 
+    function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
 </script>
-
 
 {%endblock%} 

@@ -1,0 +1,21 @@
+{% extends 'base.html'%}
+{% load static %} 
+{% block styles %} <link rel="stylesheet" href="{% static 'css/YearMonthDay/updateGoal.css' %}"> {% endblock %}
+{% block title %}Update Goal{%endblock%}
+
+{% block content %} 
+
+<div class="container">
+    <div class="card border-primary m-auto mb-3" style="max-width: 30rem">
+        <div class="card-header text-center">Update yout goal</div>
+        <div class="card-body">
+            <form action="" method="post">
+                {% csrf_token %}
+                {{formModel}}
+                <button id=button type="submit" class="btn btn-primary">Update</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -9,7 +9,13 @@ import calendar
 
 def yourGoals(request):
     if request.method == 'GET':
-        return render(request, 'YearMonthDay/yourGoals.html')
+
+        context = {
+            'form': GoalForm(),
+        }
+        
+        return render(request, 'YearMonthDay/yourGoals.html', context=context)
+
     if request.method == 'POST':
         date = datetime.datetime.now().date()
         year = date.strftime("%Y")
@@ -17,21 +23,13 @@ def yourGoals(request):
         usermodel = get_user_model()
         userObj = usermodel.objects.get(id=user.id)
 
-        if userObj.years.filter(year=int(year)).exists():
-            for key, value in request.POST.items():
-                #filter only the goals that does not exist yet in the user 
-                if not userObj.goals.filter(goal=value).exists() and 'goal' in key :
-                    goal = Goal(goal=value, year=int(year), user=userObj)
-                    print('*'*90)
-                    print(goal)
-                    goal.save()
-            return redirect(reverse('YearMonthDay:yourYear'))
-        else:
+        if not userObj.years.filter(year=int(year)).exists():
             Year.objects.create(year=int(year), user = userObj)
-            for key, value in request.POST.items():
-                if 'goal' in key:
-                    Goal.objects.create(goal=value, year=int(year), user=userObj)
-            return redirect(reverse('YearMonthDay:yourYear'))
+        goalData = request.POST.get('goal')
+        Goal.objects.create(goal=goalData, year=year, user=userObj)
+        goal = Goal.objects.last()
+        return JsonResponse({'goal': {'id': goal.id , 'goal': goal.goal}})
+
 
 def deleteGoal(request, id):
     user = request.user
@@ -52,6 +50,33 @@ def deleteGoal(request, id):
         goal.delete()
 
         return redirect(reverse('YearMonthDay:yourGoals'))
+
+def updateGoal(request, id):
+
+    user = request.user
+    usermodel = get_user_model()
+    userObj = usermodel.objects.get(id=user.id)
+
+    if request.method == 'GET':
+        goal = userObj.goals.filter(id=id).first()
+        form = GoalForm(instance=goal)
+
+        context = {
+            'formModel' : form,
+        }
+
+        return render(request, 'YearMonthDay/updateGoal.html', context)
+    
+    if request.method == 'POST':
+        goal = Goal.objects.get(id=id)
+        #look at this
+        form = GoalForm(request.POST, instance=goal)
+        if form.is_valid():
+            #only if the form is valid
+            form.save()
+            return redirect(reverse('YearMonthDay:yourGoals'))
+        else:
+            return render(request, 'YearMonthDay/updateGoal.html', {'formModel'  : form})
     
 
 def yourYear(request):

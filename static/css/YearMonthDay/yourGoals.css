@@ -13,6 +13,7 @@
     background-color: white;
     color: black;
     border: 1px solid black;
+    margin-top: 10px;
     border-radius: 3px;
     font-weight: bold;
     transition: opacity 0.15s;
@@ -32,21 +33,12 @@
     max-width: 50%;
 }
 
-label{
-    display: block;
-    text-align: center;
-    margin-bottom: 20px;
-}
 
-#input{
+#id_goal{
     width: 60%;
     margin-top: 10px;
 }
 
-#button{
-    margin-top: 20px;
-    font-size: 25px;
-}
 
 #list {
     width: 50%;
@@ -63,7 +55,7 @@ li {
 }
 
 .paragraph_li{
-    max-width: 70%;
+    max-width: 85%;
 }
 
 
