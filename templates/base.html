@@ -27,6 +27,9 @@
         <a class="navbar-brand" href="{% url 'my-account' %}">My Account</a>
         {%endif%}
         </div>
+        {% if user.is_authenticated %}
+        <span style="display: inline-block; margin-right:10px; color:white;font-style: italic;">Hi, {{user.username}}</span>
+        {% endif %}
         <div class="login-nav" style="float:right; margin-right:40px;">
             {% if user.is_authenticated %}
             <form action="{% url 'account_logout' %}" method="post">

@@ -137,7 +137,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'users.CustomUser'
 LOGIN_URL = 'account_login'
-LOGIN_REDIRECT_URL = 'YearMonthDay:yourGoals'
+LOGIN_REDIRECT_URL = 'YearMonthDay:yourYear'
 
 #adjango-allauth settings
 

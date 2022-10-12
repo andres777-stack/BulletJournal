@@ -1,0 +1,15 @@
+.container {
+    margin-top: 50px;
+    width: 40%;
+}
+
+p {
+    text-align: center;
+    font-size: 20px;
+    font-style: italic;
+}
+
+form {
+    display: flex;
+    justify-content: center;
+}

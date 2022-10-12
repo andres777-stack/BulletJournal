@@ -33,6 +33,27 @@ def yourGoals(request):
                     Goal.objects.create(goal=value, year=int(year), user=userObj)
             return redirect(reverse('YearMonthDay:yourYear'))
 
+def deleteGoal(request, id):
+    user = request.user
+    usermodel = get_user_model()
+    userObj = usermodel.objects.get(id=user.id)
+
+    if request.method == 'GET':
+        
+        context = {
+            'goal' : userObj.goals.filter(id=id).first(),
+        }
+        
+        return render(request, 'YearMonthDay/deleteGoal.html', context=context)
+    
+    if request.method == 'POST':
+
+        goal = userObj.goals.filter(id=id).first()
+        goal.delete()
+
+        return redirect(reverse('YearMonthDay:yourGoals'))
+    
+
 def yourYear(request):
     if request.method == 'GET':
         #goals = Goal.objects.filter(user__id=user.id).order_by('-id')[:3]

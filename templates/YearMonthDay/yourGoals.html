@@ -18,7 +18,7 @@
                 <li>
                     <p class="paragraph_li">{{goal|capfirst}}</p>
                     <div id="container-action">
-                        <a href="#"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                        <a href="{% url 'YearMonthDay:deleteGoal' id=goal.id %}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
                         <a href="#"><i class="fa fa-pencil-square" aria-hidden="true"></i></a>
                     </div>
                 </li> 
