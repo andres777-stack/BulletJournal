@@ -2,11 +2,22 @@
     padding-top: 100px;
 }
 
+.text {
+    font-size: 20px;
+    font-weight: bold;
+    color: rgb(49, 49, 109);
+    font-style: italic;
+}
+
 form {
     display:flex;
     justify-content:center;
 }
 
 button {
+    margin-left: 5px;
+}
+
+a {
     margin-left: 5px;
 }

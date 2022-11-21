@@ -5,25 +5,9 @@
 
 {% block content %} 
 
-<!--<div style="padding-top: 50px; display:flex; justify-content:center">
-    <div>
-        <h3>{{obj.class_name}}: {{obj}}</h3>
-        <h3>Day: {{obj.day.mes}} {{obj.day.number}}</h3>
-        {% if obj.done == False or obj.class_name == 'Note'%}
-        <form action="" method="post">
-            {% csrf_token %}
-            <label for="date">Pick up a date to migrate your {{obj.class_name|lower}}</label>
-            <input type="date" id="date" name="dateToMigrate">
-            <button type="submit" class="btn btn-info">Migrar</button>
-        </form>
-        {% else %}
-        <h3>The {{obj.class_name|lower}} is already done. You cannot migrate it.</h3>
-        {% endif %}
-    </div>
-</div>-->
 <div class="container">
     <div class="card border-primary m-auto mb-3" style="max-width: 30rem">
-        <div class="card-header text-center">Migrate {{obj.class_name|lower}}</div>
+        <div class="card-header text-center text">Migrate {{obj.class_name|lower}}</div>
         <div class="card-body">
             {% if obj.done == False or obj.class_name == 'Note'%}
             <p class="card-text text-center">Please select a day to migrate your {{obj.class_name|lower}}.</p>
@@ -31,9 +15,8 @@
             {% csrf_token %}
             <input type="date" id="date" name="dateToMigrate" 
             min="{{year}}-{{monthNum}}-1" max="{{year}}-{{monthNum}}-{{daysInMonth}}">
-            <!--<input type="date" id="date" name="day" 
-        min="{{year}}-{{monthInt}}-01" max="{{year}}-{{monthInt}}-{{daysOfMonth}}">-->
             <button type="submit" class="btn btn-info">Migrar</button>
+            <a href="{% url 'YearMonthDay:myDay' mes=mes dia=number %}" class="btn btn-danger">Cancel</a>
             </form>
             {% else %}
             <p class="card-text">

@@ -3,16 +3,31 @@
 }
 
 label {
-    margin-left: 100px;
+    margin-left: 10px;
 }
 
 input {
     padding-left: 5px;
     margin: 0 auto;
+    width: 80%;
 }
 
+.text-center {
+    font-size: 20px;
+    font-weight: bold;
+    font-style: italic;
+    color: rgb(56, 56, 99);
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+}
 #button {
-    display: block;
-    margin: 0 auto;
     margin-top: 10px;
+}
+
+.btn {
+    margin-top: 10px;
+    margin-left: 5px;
 }

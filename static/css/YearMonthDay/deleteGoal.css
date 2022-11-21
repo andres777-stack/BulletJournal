@@ -13,3 +13,12 @@ form {
     display: flex;
     justify-content: center;
 }
+
+.actions {
+    display: flex;
+    justify-content: center;
+}
+
+.btn {
+    margin-left: 5px;
+}

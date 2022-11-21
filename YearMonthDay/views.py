@@ -2,11 +2,13 @@ from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.http import JsonResponse
 from django.apps import apps
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from YearMonthDay.models import * 
 from YearMonthDay.forms import *
 import datetime
 import calendar
 
+@login_required()
 def yourGoals(request):
     if request.method == 'GET':
 
@@ -30,7 +32,7 @@ def yourGoals(request):
         goal = Goal.objects.last()
         return JsonResponse({'goal': {'id': goal.id , 'goal': goal.goal}})
 
-
+@login_required()
 def deleteGoal(request, id):
     user = request.user
     usermodel = get_user_model()
@@ -51,6 +53,7 @@ def deleteGoal(request, id):
 
         return redirect(reverse('YearMonthDay:yourGoals'))
 
+@login_required()
 def updateGoal(request, id):
 
     user = request.user
@@ -78,15 +81,19 @@ def updateGoal(request, id):
         else:
             return render(request, 'YearMonthDay/updateGoal.html', {'formModel'  : form})
     
-
+@login_required()
 def yourYear(request):
     if request.method == 'GET':
-        #goals = Goal.objects.filter(user__id=user.id).order_by('-id')[:3]
+        #creating a year obj if not was created yet
+        user = request.user
+        usermodel = get_user_model()
+        userObj = usermodel.objects.get(id=user.id)
         date = datetime.datetime.now().date()
         year = date.strftime("%Y")
         month = date.strftime("%m")
-        #creating each month
-
+        if not Year.objects.filter(year=year, user=userObj).exists():
+            Year.objects.create(year=year, user=userObj)
+        #creating each month of the year
         myarr = []
         for i in range(1, 13, 1):
             mc = calendar.HTMLCalendar()
@@ -95,7 +102,7 @@ def yourYear(request):
             myarr.append({'mc': mc, 'monthName': monthName})
         return render(request, 'YearMonthDay/year.html', context={'months': myarr, 'year': year})
 
-
+@login_required()
 def yourMonth(request, mes):
     
     if request.method == 'GET':
@@ -147,7 +154,7 @@ def yourMonth(request, mes):
         day.save()
         return JsonResponse({'day': {'id': day.numberInt, 'important': day.important, 'month': day.mes}})
         
-
+@login_required()
 def mesdia(request, mes, dia):
 
     if request.method == 'GET':
@@ -158,7 +165,7 @@ def mesdia(request, mes, dia):
         if Day.objects.filter(year=yearObj, mes=mes, number=dia).exists():
             day = Day.objects.get(year=yearObj, mes=mes, number=dia)
         else:
-            day = Day.objects.create(mes=mes, number=dia, numberInt=dia)
+            day = Day.objects.create(year=yearObj, mes=mes, number=dia, numberInt=dia)
 
         context = {
             'dia': day,
@@ -187,6 +194,7 @@ def mesdia(request, mes, dia):
                 data = list(instanceDay.notes.all().values())
             return JsonResponse({'objects': data})
 
+@login_required()
 def migrate(request, model, id):
 
     if request.method == 'GET':
@@ -194,6 +202,7 @@ def migrate(request, model, id):
         Model = apps.get_model('YearMonthDay', model)
         obj = Model.objects.get(id=id)
         month = obj.day.mes
+        numberday =obj.day.numberInt 
         month_number = datetime.datetime.strptime(month[:3], '%b').month
         date = datetime.datetime.now().date()
         year = date.strftime("%Y")
@@ -209,6 +218,8 @@ def migrate(request, model, id):
             'year': year,
             'monthNum': month_number,
             'daysInMonth': daysInMonth,
+            'mes': month,
+            'number': numberday,
             }
 
         return render(request, 'YearMonthDay/migrate.html', context=context)
@@ -244,6 +255,7 @@ def migrate(request, model, id):
         obj.save()
         return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':monthUrl, 'dia': dayUrl}))
         
+@login_required()
 def delete(request, model, id):
     #obj represent a task object, event object or note.
     Model = apps.get_model('YearMonthDay', model)
@@ -255,7 +267,7 @@ def delete(request, model, id):
     obj.delete()
     return redirect(reverse('YearMonthDay:myDay', kwargs={'mes':monthUrl, 'dia': dayUrl}))
 
-
+@login_required()
 def checkTask(request):
     id = getOnlyInt(request.POST['obj-id'])
     modelStr = getOnlyWords(request.POST['obj-id'])
@@ -266,6 +278,7 @@ def checkTask(request):
     id = obj.id
     return JsonResponse({'obj': id, 'model': modelStr})
 
+@login_required()
 def deleteImportant(request, month, number):
     date = datetime.datetime.now().date()
     year = date.strftime("%Y")
@@ -276,6 +289,7 @@ def deleteImportant(request, month, number):
     day.save()
     return redirect(reverse('YearMonthDay:yourMonth', kwargs={'mes': day.mes + '2022'}))
 
+#Helpers Functions
 def getOnlyWords(value):
     valids = []
     for character in value:

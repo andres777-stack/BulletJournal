@@ -82,6 +82,10 @@
         }
     
     function saveData() {
+        let date = document.getElementById('date').value;
+        if(!date) {
+            return alert('Please select a date please')
+        }
         let form = new FormData(document.getElementById('form'));
         let month = document.getElementById('month');
         let list = document.getElementById('list');
